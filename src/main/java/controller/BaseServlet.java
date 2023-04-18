@@ -8,6 +8,12 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
+/**
+ * 基地servlet
+ *
+ * @author Secret
+ * @date 2023/04/18
+ */
 public class BaseServlet extends HttpServlet {
 
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
