@@ -5,7 +5,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.file.*;
-import java.security.PublicKey;
 
 /**
  * txt监听类
@@ -14,10 +13,26 @@ import java.security.PublicKey;
  * @date 2023/04/18
  */
 public class TxtWatcher {
-    String txtPath;
-    File txtFile;
-    Path dir;
-    WatchService watcher;
+    protected String txtPath;
+    protected File txtFile;
+    protected Path dir;
+    protected WatchService watcher;
+
+    public String getTxtPath() {
+        return txtPath;
+    }
+
+    public File getTxtFile() {
+        return txtFile;
+    }
+
+    public Path getDir() {
+        return dir;
+    }
+
+    public WatchService getWatcher() {
+        return watcher;
+    }
 
     /**
      * 无参构造，默认监听C:\TPM\printer.txt
@@ -75,7 +90,11 @@ public class TxtWatcher {
                         lastPosition = randomAccessFile.length();
                     }
                 }
-                key.reset();
+                boolean reset = key.reset();
+                if (!reset) {
+                    System.out.println("WatchKey reset failed.");
+                    break;
+                }
                 System.out.println(content);
             } catch (InterruptedException | IOException e) {
                 throw new RuntimeException(e);

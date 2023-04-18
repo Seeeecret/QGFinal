@@ -13,8 +13,8 @@ import java.sql.SQLException;
 public class UserService {
 
     public  static User query(String username) {
-//        User user = new User("username", "password");
         User user = null;
+        // try-with-resources语句会自动关闭资源!!
         try (Connection connection = CRUDUtil.getConnection()) {
             user = UserDAO.query(connection, username);
             CRUDUtil.close(connection);
