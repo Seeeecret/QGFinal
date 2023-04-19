@@ -1,5 +1,7 @@
 package dao;
 
+import service.TxtService;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -74,7 +76,21 @@ public class TxtWatcher {
      * @throws FileNotFoundException 文件未发现异常
      */
     public void watch() throws FileNotFoundException {
-        RandomAccessFile randomAccessFile = new RandomAccessFile(txtFile, "r");
+        //        监听对象
+//        之后下面的方法可以替换成TxtWatcher的watch()方法
+        WatchService watcher = this.getWatcher();
+//        读文件的对象
+        RandomAccessFile randomAccessFile = null;
+        TxtService txtService;
+        txtService = new TxtService();
+
+
+        try {
+            randomAccessFile = new RandomAccessFile(this.getTxtFile(), "r");
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+
         long lastPosition = 0;
         while (true) {
             String content = "";
@@ -84,18 +100,21 @@ public class TxtWatcher {
                     WatchEvent.Kind<?> kind = event.kind();
                     Path fileName = (Path) event.context();
                     if (kind == StandardWatchEventKinds.ENTRY_MODIFY
-                            && fileName.toString().equals(txtFile.getName())) {
+                            && fileName.toString().equals(this.getTxtFile().getName())) {
                         randomAccessFile.seek(lastPosition);
                         content = randomAccessFile.readLine();
                         lastPosition = randomAccessFile.length();
                     }
                 }
+
                 boolean reset = key.reset();
                 if (!reset) {
                     System.out.println("WatchKey reset failed.");
                     break;
                 }
-                System.out.println(content);
+
+//                System.out.println(content);换成发送到服务器的方法
+                txtService.sendTxtData(content);
             } catch (InterruptedException | IOException e) {
                 throw new RuntimeException(e);
             }

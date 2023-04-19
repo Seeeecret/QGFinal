@@ -15,6 +15,6 @@ public class Mapper {
     }
 
     }
-    public Mapper() {
+    private Mapper() {
     }
 }
