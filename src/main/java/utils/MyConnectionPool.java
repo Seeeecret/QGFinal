@@ -43,7 +43,6 @@ public class MyConnectionPool {
             Connection conn = DriverManager.getConnection(url, username, password);
             long createTime = System.currentTimeMillis();
             conn.setClientInfo("createTime", String.valueOf(createTime));
-//            conn.setClientInfo("isClosed", "false");
             connections.add(conn);
         }
     }
@@ -57,7 +56,6 @@ public class MyConnectionPool {
      */
     private boolean isConnectionValid(Connection conn) throws SQLException {
         if (conn.isClosed()) {
-//            conn.setClientInfo("isClosed", "true");
             return false;
         }
 
@@ -91,8 +89,8 @@ public class MyConnectionPool {
             if (isConnectionValid(conn)) {
 //                it.remove();
                 return conn;
-            }else{
-             if (conn.isClosed()) {
+            } else {
+                if (conn.isClosed()) {
                     it.remove();
                 }
             }

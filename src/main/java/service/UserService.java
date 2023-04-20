@@ -13,8 +13,8 @@ import java.sql.SQLException;
 public class UserService {
 
     public  static User query(String username) {
-//        User user = new User("username", "password");
         User user = null;
+        // try-with-resources语句会自动关闭资源!!记得改
         try (Connection connection = CRUDUtil.getConnection()) {
             user = UserDAO.query(connection, username);
             CRUDUtil.close(connection);
@@ -37,7 +37,13 @@ public class UserService {
         return null;
     }
 
-    // 注册账号
+    /**
+     * 注册账号
+     *
+     * @param username 用户名
+     * @param password 密码
+     * @return boolean
+     */
     public static boolean register(String username, String password) {
         User user = null;
         try (Connection connection = CRUDUtil.getConnection()) {
