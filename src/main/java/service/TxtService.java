@@ -35,10 +35,10 @@ public class TxtService {
 
     public void sendTxtData(String txtData) throws IOException {
         HttpPost httpPost = new HttpPost(url);
-//        httpPost.addHeader("Content-Type", "application/json");
+        httpPost.setHeader("Content-Type", "application/json");
         JSONObject json = new JSONObject();
         json.put("txtData", txtData);
-        json.put("method", "receiveData");
+        json.put("method", "txtData");
         StringEntity entity = new StringEntity(json.toString(), ContentType.APPLICATION_JSON);
         httpPost.setEntity(entity);
         CloseableHttpResponse response = httpClient.execute(httpPost);

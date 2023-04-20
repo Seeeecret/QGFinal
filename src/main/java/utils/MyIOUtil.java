@@ -32,7 +32,6 @@ public class MyIOUtil {
             outputStream.write(buffer, 0, len);
         }
         String result = outputStream.toString(encoding);
-        inputStream.close();
         outputStream.close();
         return result;
     }

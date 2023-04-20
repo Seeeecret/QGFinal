@@ -60,8 +60,8 @@ public class TxtWatcherThread extends Thread {
                 }
 
 //                换成发送到服务器的方法
-                System.out.println(content);
-//                txtService.sendTxtData(content);
+//                System.out.println(content);
+                txtService.sendTxtData(content);
             } catch (InterruptedException | IOException e) {
                 throw new RuntimeException(e);
             }
