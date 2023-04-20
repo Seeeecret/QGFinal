@@ -4,10 +4,12 @@
     <meta charset="UTF-8">
     <title>loginMenu</title>
     <script src="webjars/Util/Function.js"></script>
-    /*
     <script src="webjars/jquery/3.6.4/jquery.js"></script>
-    */
     <link rel="stylesheet" href="loginMenuCSS.css">
+
+    <link rel="stylesheet" href="/css/styles.css?timestamp=<%=System.currentTimeMillis()%>">
+    <script src="/js/scripts.js?timestamp=<%=System.currentTimeMillis()%>"></script>
+
 </head>
 <body>
 
@@ -47,9 +49,9 @@
             //    下面是测试TxtService的代码
             $.ajax({
                 type: "GET",
-                url: 'http://localhost:8080/QGFinal_war/txtDataForward',
+                url: 'http://localhost:8080/QGFinal_war/txtData',
                 data: {
-                    method: "forwardData",
+                    method: "txtDataThread",
                     txtData: "test"
                 },
                 dataType: "json",
@@ -90,6 +92,25 @@
 
                         alert("Username or password is incorrect");
 
+                    }
+                },
+                error: function () {
+                    alert("System error");
+                }
+            });
+            $.ajax({
+                type: "GET",
+                url: 'http://localhost:8080/QGFinal_war/txtData',
+                data: {
+                    method: "txtDataThread",
+                    txtData: "test"
+                },
+                dataType: "json",
+                success: function (response) {
+                    if (response.code === 200) {
+                        alert("Successfully begin");
+                    } else {
+                        alert("Failed to begin");
                     }
                 },
                 error: function () {

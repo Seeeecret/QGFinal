@@ -10,10 +10,11 @@ import java.io.IOException;
 
 @WebServlet("/txtDataForward")
 public class TxtDataForwardServlet extends BaseServlet{
-    public void forwardData(HttpServletRequest request,
+    public void txtDataForward(HttpServletRequest request,
                             HttpServletResponse response) throws ServletException, IOException {
         TxtWatcherThread txtWatcherThread = new TxtWatcherThread();
         txtWatcherThread.start();
+        request.setAttribute("method","txtData");
         request.getRequestDispatcher("/txtData").forward(request,response);
     }
 }
