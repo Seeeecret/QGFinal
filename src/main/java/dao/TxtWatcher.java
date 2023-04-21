@@ -1,6 +1,6 @@
 package dao;
 
-import service.TxtService;
+import service.TxtHttpService;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -81,8 +81,8 @@ public class TxtWatcher {
         WatchService watcher = this.getWatcher();
 //        读文件的对象
         RandomAccessFile randomAccessFile = null;
-        TxtService txtService;
-        txtService = new TxtService();
+        TxtHttpService txtHttpService;
+        txtHttpService = new TxtHttpService();
 
 
         try {
@@ -114,7 +114,7 @@ public class TxtWatcher {
                 }
 
 //                System.out.println(content);换成发送到服务器的方法
-                txtService.sendTxtData(content);
+                txtHttpService.sendTxtData(content);
             } catch (InterruptedException | IOException e) {
                 throw new RuntimeException(e);
             }

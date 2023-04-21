@@ -1,10 +1,8 @@
 package dao;
 
-import service.TxtService;
+import service.TxtHttpService;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.RandomAccessFile;
+import java.io.*;
 import java.nio.file.*;
 
 public class TxtWatcherThread extends Thread {
@@ -27,17 +25,22 @@ public class TxtWatcherThread extends Thread {
         WatchService watcher = txtWatcher.getWatcher();
 //        读文件的对象
         RandomAccessFile randomAccessFile = null;
-            TxtService txtService;
-        txtService = new TxtService();
-
-
+        TxtHttpService txtHttpService;
+        txtHttpService = new TxtHttpService();
+        InputStreamReader isr = null;
+        BufferedReader br = null;
+//        注释掉的代码为第一版中使用randomAccessFile记录lastPosition的代码,这里不关闭的话会不会有问题?
         try {
-            randomAccessFile = new RandomAccessFile(txtWatcher.getTxtFile(), "r");
+//            randomAccessFile = new RandomAccessFile(txtWatcher.getTxtFile(), "r");
+            isr = new InputStreamReader(new FileInputStream(txtWatcher.getTxtFile()), "GBK");
+            br = new BufferedReader(isr);
         } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(e);
         }
 
-        long lastPosition = 0;
+//        long lastPosition = 0;
         while (true) {
             String content = "";
             try {
@@ -47,9 +50,9 @@ public class TxtWatcherThread extends Thread {
                     Path fileName = (Path) event.context();
                     if (kind == StandardWatchEventKinds.ENTRY_MODIFY
                             && fileName.toString().equals(txtWatcher.getTxtFile().getName())) {
-                        randomAccessFile.seek(lastPosition);
-                        content = randomAccessFile.readLine();
-                        lastPosition = randomAccessFile.length();
+//                        randomAccessFile.seek(lastPosition);
+                        content = br.readLine();
+//                        lastPosition = randomAccessFile.length();
                     }
                 }
 
@@ -61,10 +64,16 @@ public class TxtWatcherThread extends Thread {
 
 //                换成发送到服务器的方法
 //                System.out.println(content);
-                txtService.sendTxtData(content);
+                txtHttpService.sendTxtData(content);
             } catch (InterruptedException | IOException e) {
                 throw new RuntimeException(e);
             }
+        }
+        try {
+            br.close();
+            isr.close();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 }

@@ -13,16 +13,16 @@ import java.io.IOException;
 /**
  * @author Secret
  */
-public class TxtService {
+public class TxtHttpService {
     String url;
     CloseableHttpClient httpClient;
 
-    public TxtService(){
+    public TxtHttpService(){
         this.url=("http://localhost:8080/QGFinal_war/txtData");
         httpClient = HttpClients.createDefault();
     }
 
-    public TxtService(String url){
+    public TxtHttpService(String url){
         this.url = url;
 //        PoolingHttpClientConnectionManager connManager = new PoolingHttpClientConnectionManager();
 //        connManager.setMaxTotal(100); // 设置连接池最大连接数
