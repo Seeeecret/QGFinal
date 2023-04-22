@@ -2,11 +2,12 @@ package pojo;
 import constants.PrinterStatus;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author Secret
  */
-public class PrinterMessage {
+public class PrinterRawMessage {
     private long timestamp;
     private int statusValue;
     private LinkedList<String> params;
@@ -17,17 +18,17 @@ public class PrinterMessage {
      *
      * @param message 消息
      */
-    public PrinterMessage(String message) {
+    public PrinterRawMessage(String message) {
         this.original = message;
         String[] parts = message.split(":");
         this.timestamp = Long.parseLong(parts[0]);
         this.statusValue = Integer.parseInt(parts[1]);
-        this.params = new LinkedList<>();
+//        this.params = new LinkedList<>();
         // 将parts数组中从第三个开始的子字符串添加到params列表中
-        this.params.addAll(Arrays.asList(parts).subList(2, parts.length));
+        this.params = Arrays.stream(parts).skip(2).collect(Collectors.toCollection(LinkedList::new));
     }
 
-    public PrinterMessage() {
+    public PrinterRawMessage() {
     }
 
     /**
@@ -35,7 +36,7 @@ public class PrinterMessage {
      *
      * @return {@link PrinterStatus}
      */
-    public PrinterStatus getStatusEnum() {
+    public PrinterStatus getPrinterStatusByStatusValue() {
         return PrinterStatus.fromStatusValue(statusValue);
     }
 
@@ -55,10 +56,11 @@ public class PrinterMessage {
         return this.original;
     }
 
+    @Override
     public String toString() {
-        return "PrinterMessage{" +
+        return "PrinterRawMessage{" +
                 "timestamp=" + timestamp +
-                ", statusValue='" + statusValue + '\'' +
+                ", statusValue=" + statusValue +
                 ", params=" + params +
                 ", original='" + original + '\'' +
                 '}';

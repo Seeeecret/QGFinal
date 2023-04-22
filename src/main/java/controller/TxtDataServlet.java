@@ -2,6 +2,9 @@ package controller;
 
 import com.alibaba.fastjson.JSONObject;
 import dao.TxtWatcherThread;
+import pojo.PrinterRawMessage;
+import pojo.PrinterTreatedMessage;
+import service.TxtDataManageService;
 import utils.Mapper;
 
 import javax.servlet.annotation.WebServlet;
@@ -28,9 +31,9 @@ public class TxtDataServlet extends BaseServlet {
 
         String method = jsonObject.getString("method");
         String txtData = jsonObject.getString("txtData");
-        request.getParameter("method");
-        System.out.println(method + "  " + txtData);
-
+        PrinterRawMessage printerRawMessage = TxtDataManageService.toPrinterRawMessage(txtData);
+        PrinterTreatedMessage printerTreatedMessage = TxtDataManageService.toPrinterTreatedMessage(txtData);
+        System.out.println(printerTreatedMessage);
         HashMap<String, Object> jsonMap = new HashMap<>(5);
         jsonMap.put("msg", "请求响应成功");
         jsonMap.put("code", 200);

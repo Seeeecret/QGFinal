@@ -29,18 +29,14 @@ public class TxtWatcherThread extends Thread {
         txtHttpService = new TxtHttpService();
         InputStreamReader isr = null;
         BufferedReader br = null;
-//        注释掉的代码为第一版中使用randomAccessFile记录lastPosition的代码,这里不关闭的话会不会有问题?
+//        虽然生成样例的程序显示的都是英文，自己调试时时看出不出来影响。但题目要求是GBK编码，所以这里要用GBK编码
         try {
-//            randomAccessFile = new RandomAccessFile(txtWatcher.getTxtFile(), "r");
             isr = new InputStreamReader(new FileInputStream(txtWatcher.getTxtFile()), "GBK");
             br = new BufferedReader(isr);
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
-        } catch (UnsupportedEncodingException e) {
+        } catch (FileNotFoundException | UnsupportedEncodingException e) {
             throw new RuntimeException(e);
         }
 
-//        long lastPosition = 0;
         while (true) {
             String content = "";
             try {
@@ -50,9 +46,7 @@ public class TxtWatcherThread extends Thread {
                     Path fileName = (Path) event.context();
                     if (kind == StandardWatchEventKinds.ENTRY_MODIFY
                             && fileName.toString().equals(txtWatcher.getTxtFile().getName())) {
-//                        randomAccessFile.seek(lastPosition);
                         content = br.readLine();
-//                        lastPosition = randomAccessFile.length();
                     }
                 }
 

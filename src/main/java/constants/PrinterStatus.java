@@ -1,6 +1,6 @@
 package constants;
 
-import pojo.PrinterMessage;
+import pojo.PrinterRawMessage;
 
 /**
  * 打印机状态
@@ -27,7 +27,7 @@ public enum PrinterStatus {
     private final String shortDescription;
     private final int paramCount;
 
-    private PrinterStatus(int statusValue, String shortDescription, int paramCount) {
+    PrinterStatus(int statusValue, String shortDescription, int paramCount) {
         this.statusValue = statusValue;
         this.shortDescription = shortDescription;
         this.paramCount = paramCount;
@@ -54,8 +54,13 @@ public enum PrinterStatus {
     当s为46，用户正常关闭控制软件，无额外参数
     当s为80，输出作业名称字符串，两个额外参数，p1是32位无符号整形，表示作业名称字符串的长度
     （字节数），p2为作业名称字符串（GBK编码）*/
-    public String getParamsDescription(PrinterMessage printerMessage) {
-        double paramIndex = Double.parseDouble(printerMessage.getParams().get(3));
+    public String getParamsDescription(PrinterRawMessage printerRawMessage) {
+        double paramIndex;
+        if(!printerRawMessage.getParams().isEmpty()) {
+            paramIndex = Double.parseDouble(printerRawMessage.getParams().get(0));
+        }else {
+            return "";
+        }
         String paramDescription = "";
         switch (this) {
             case WORK_NOT_STARTED:
@@ -99,7 +104,7 @@ public enum PrinterStatus {
                 break;
             }
             case WORK_NAME_STRING:
-                paramDescription = "作业名称:" + printerMessage.getParams().get(4)+" 名称长度:"+ (int) paramIndex;
+                paramDescription = "作业名称:" + printerRawMessage.getParams().get(1)+" 名称长度:"+ (int) paramIndex;
             default:
         }
         return paramDescription;
@@ -129,5 +134,13 @@ public enum PrinterStatus {
 
     public String getShortDescription() {
         return shortDescription;
+    }
+
+    @Override
+    public String toString() {
+        return "PrinterStatus{" +
+                "statusValue=" + statusValue +
+                ", shortDescription='" + shortDescription + '\'' +
+                '}';
     }
 }
