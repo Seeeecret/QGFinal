@@ -25,7 +25,7 @@ public class UserServlet extends BaseServlet {
                          HttpServletResponse response)
             throws IOException {
         // 设置响应内容类型
-        HashMap<String, Object> jsonMap = new HashMap<>();
+        HashMap<String, Object> jsonMap = new HashMap<>(5);
         String username = request.getParameter("username");
         int i = 0;
         try {
@@ -52,7 +52,7 @@ public class UserServlet extends BaseServlet {
                       HttpServletResponse response)
             throws IOException {
         // 设置响应内容类型
-        HashMap<String, Object> jsonMap = new HashMap<>();
+        HashMap<String, Object> jsonMap = new HashMap<>(5);
         String username = request.getParameter("username");
         int i = 0;
         i = UserService.query(username).getMerit();
@@ -71,7 +71,7 @@ public class UserServlet extends BaseServlet {
         String remember = request.getParameter("remember");
         User login;
         login = UserService.login(username, password);
-        HashMap<String, Object> jsonMap = new HashMap<>();
+        HashMap<String, Object> jsonMap = new HashMap<>(5);
         if (login != null) {
             if(TRUE.equals(remember)) {
                 Cookie usernameCookie = new Cookie("username", username);
@@ -99,7 +99,7 @@ public class UserServlet extends BaseServlet {
         String username = request.getParameter("username");
         String password = request.getParameter("password");
         boolean register = UserService.register(username, password);
-        HashMap<String, Object> jsonMap = new HashMap<>();
+        HashMap<String, Object> jsonMap = new HashMap<>(5);
         if (register) {
             jsonMap.put("code", 200);
             jsonMap.put("msg", "注册成功");
@@ -117,7 +117,7 @@ public class UserServlet extends BaseServlet {
         String username = request.getParameter("username");
         String password = request.getParameter("password");
         boolean changePassword = UserService.changePassword(username, password);
-        HashMap<String, Object> jsonMap = new HashMap<>();
+        HashMap<String, Object> jsonMap = new HashMap<>(5);
         if (changePassword) {
             jsonMap.put("code", 200);
             jsonMap.put("msg", "修改成功");
@@ -136,7 +136,7 @@ public class UserServlet extends BaseServlet {
         String password = request.getParameter("password");
 
         User login = UserService.login(username, password);
-        HashMap<String, Object> jsonMap = new HashMap<>();
+        HashMap<String, Object> jsonMap = new HashMap<>(5);
 
         if (login != null) {
             boolean delete = UserService.deleteUser(username);

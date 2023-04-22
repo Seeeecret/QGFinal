@@ -1,10 +1,8 @@
 package dao;
 
-import service.TxtService;
+import service.TxtHttpService;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.RandomAccessFile;
+import java.io.*;
 import java.nio.file.*;
 
 public class TxtWatcherThread extends Thread {
@@ -27,17 +25,18 @@ public class TxtWatcherThread extends Thread {
         WatchService watcher = txtWatcher.getWatcher();
 //        读文件的对象
         RandomAccessFile randomAccessFile = null;
-            TxtService txtService;
-        txtService = new TxtService();
-
-
+        TxtHttpService txtHttpService;
+        txtHttpService = new TxtHttpService();
+        InputStreamReader isr = null;
+        BufferedReader br = null;
+//        虽然生成样例的程序显示的都是英文，自己调试时时看出不出来影响。但题目要求是GBK编码，所以这里要用GBK编码
         try {
-            randomAccessFile = new RandomAccessFile(txtWatcher.getTxtFile(), "r");
-        } catch (FileNotFoundException e) {
+            isr = new InputStreamReader(new FileInputStream(txtWatcher.getTxtFile()), "GBK");
+            br = new BufferedReader(isr);
+        } catch (FileNotFoundException | UnsupportedEncodingException e) {
             throw new RuntimeException(e);
         }
 
-        long lastPosition = 0;
         while (true) {
             String content = "";
             try {
@@ -47,9 +46,7 @@ public class TxtWatcherThread extends Thread {
                     Path fileName = (Path) event.context();
                     if (kind == StandardWatchEventKinds.ENTRY_MODIFY
                             && fileName.toString().equals(txtWatcher.getTxtFile().getName())) {
-                        randomAccessFile.seek(lastPosition);
-                        content = randomAccessFile.readLine();
-                        lastPosition = randomAccessFile.length();
+                        content = br.readLine();
                     }
                 }
 
@@ -61,10 +58,16 @@ public class TxtWatcherThread extends Thread {
 
 //                换成发送到服务器的方法
 //                System.out.println(content);
-                txtService.sendTxtData(content);
+                txtHttpService.sendTxtData(content);
             } catch (InterruptedException | IOException e) {
                 throw new RuntimeException(e);
             }
+        }
+        try {
+            br.close();
+            isr.close();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 }

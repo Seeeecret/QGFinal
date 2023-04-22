@@ -2,9 +2,11 @@ package controller;
 
 import com.alibaba.fastjson.JSONObject;
 import dao.TxtWatcherThread;
+import pojo.PrinterRawMessage;
+import pojo.PrinterTreatedMessage;
+import service.TxtDataManageService;
 import utils.Mapper;
 
-import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -29,10 +31,10 @@ public class TxtDataServlet extends BaseServlet {
 
         String method = jsonObject.getString("method");
         String txtData = jsonObject.getString("txtData");
-        request.getParameter("method");
-        System.out.println(method + "  " + txtData);
-
-        HashMap<String, Object> jsonMap = new HashMap<>();
+        PrinterRawMessage printerRawMessage = TxtDataManageService.toPrinterRawMessage(txtData);
+        PrinterTreatedMessage printerTreatedMessage = TxtDataManageService.toPrinterTreatedMessage(txtData);
+        System.out.println(printerTreatedMessage);
+        HashMap<String, Object> jsonMap = new HashMap<>(5);
         jsonMap.put("msg", "请求响应成功");
         jsonMap.put("code", 200);
         Mapper.writeValue(response.getWriter(), jsonMap);
@@ -44,16 +46,15 @@ public class TxtDataServlet extends BaseServlet {
      *
      * @param request  请求
      * @param response 响应
-     * @throws ServletException servlet异常
      * @throws IOException      ioexception
      */
     public void txtDataThread(HttpServletRequest request,
-                              HttpServletResponse response) throws ServletException, IOException {
+                              HttpServletResponse response) throws IOException {
 
         TxtWatcherThread txtWatcherThread = new TxtWatcherThread();
         txtWatcherThread.start();
 
-        HashMap<String, Object> jsonMap = new HashMap<>();
+        HashMap<String, Object> jsonMap = new HashMap<>(5);
         jsonMap.put("code", 200);
         jsonMap.put("msg", "请求响应成功");
         Mapper.writeValue(response.getWriter(), jsonMap);

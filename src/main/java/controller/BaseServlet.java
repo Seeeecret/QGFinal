@@ -27,23 +27,23 @@ public class BaseServlet extends HttpServlet {
         response.setCharacterEncoding("UTF-8");
         String methodName = null;
         Class<? extends BaseServlet> actionClass = this.getClass();
+        try {
 //        如果是json格式的请求，就从请求体中获取method参数
-        try{
-        if (requestContentType != null && requestContentType.contains("application/json")) {
-            String jsonString = MyIOUtil.toString(request.getInputStream(), "UTF-8");
-            JSONObject jsonObject = JSON.parseObject(jsonString);
-            methodName = jsonObject.getString("method");
-            Method method = actionClass.getMethod(methodName, HttpServletRequest.class, HttpServletResponse.class, JSONObject.class);
-            method.invoke(this, request, response, jsonObject);
+            if (requestContentType != null && requestContentType.contains("application/json")) {
+                String jsonString = MyIOUtil.toString(request.getInputStream(), "UTF-8");
+                JSONObject jsonObject = JSON.parseObject(jsonString);
+                methodName = jsonObject.getString("method");
+                Method method = actionClass.getMethod(methodName, HttpServletRequest.class, HttpServletResponse.class, JSONObject.class);
+                method.invoke(this, request, response, jsonObject);
 //        如果是表单格式的请求，就从请求参数中获取method参数
-        } else {
-            methodName = request.getParameter("method");
-            if (methodName == null || methodName.isEmpty()) {
-                throw new RuntimeException("没有传入method参数");
-            }
-            Method method = actionClass.getMethod(methodName, HttpServletRequest.class, HttpServletResponse.class);
-            method.invoke(this, request, response);
-        }// 通过反射调用子类的方法
+            } else {
+                methodName = request.getParameter("method");
+                if (methodName == null || methodName.isEmpty()) {
+                    throw new RuntimeException("没有传入method参数");
+                }
+                Method method = actionClass.getMethod(methodName, HttpServletRequest.class, HttpServletResponse.class);
+                method.invoke(this, request, response);
+            }// 通过反射调用子类的方法
         } catch (InvocationTargetException | IllegalAccessException | NoSuchMethodException e) {
             throw new RuntimeException(e);
         }
