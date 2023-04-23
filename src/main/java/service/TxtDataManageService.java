@@ -87,6 +87,9 @@ public class TxtDataManageService {
     public static void insertTxtData(String original, int printerId) throws SQLException {
         TxtDAO.insertTxtData(toPrinterTreatedMessage(original), original, printerId);
     }
+    public static void insertTxtData(PrinterRawMessage printerRawMessage, int printerId) throws SQLException {
+        TxtDAO.insertTxtData(new PrinterTreatedMessage(printerRawMessage), printerRawMessage.getOriginal(), printerId);
+    }
 
     public static void insertStatisticData(PrinterStatistic printerStatistic) throws SQLException {
         TxtDAO.insertStatisticData(printerStatistic);

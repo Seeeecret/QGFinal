@@ -2,6 +2,7 @@ package controller;
 
 import com.alibaba.fastjson.JSONObject;
 import dao.TxtWatcherThread;
+import pojo.PrinterRawMessage;
 import pojo.PrinterStatistic;
 import service.TxtDataManageService;
 import utils.Mapper;
@@ -13,11 +14,19 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.HashMap;
 
-/**
- * @author Secret
- */
+
 @WebServlet("/txtData")
 public class TxtDataServlet extends BaseServlet {
+    private static HashMap<Integer,PrinterStatistic> printerStatisticHashMap = new HashMap<>(10);
+
+    public static HashMap<Integer, PrinterStatistic> getPrinterStatisticHashMap() {
+        return printerStatisticHashMap;
+    }
+
+    public static void setPrinterStatisticHashMap(HashMap<Integer, PrinterStatistic> printerStatisticHashMap) {
+        TxtDataServlet.printerStatisticHashMap = printerStatisticHashMap;
+    }
+
     /**
      * 处理txt数据的方法
      *
@@ -32,8 +41,16 @@ public class TxtDataServlet extends BaseServlet {
         String method = jsonObject.getString("method");
         String txtData = jsonObject.getString("txtData");
         int printerID = jsonObject.getInteger("printerID");
-        PrinterStatistic printerStatistic = new PrinterStatistic(printerID);
-        TxtDataManageService.insertTxtData(txtData, printerID);
+        PrinterStatistic printerStatistic;
+        if(printerStatisticHashMap. containsKey(printerID)){
+            printerStatistic = printerStatisticHashMap.get(printerID);
+        }else {
+            printerStatistic = new PrinterStatistic(printerID);
+            printerStatisticHashMap.put(printerID,printerStatistic);
+        }
+        PrinterRawMessage printerRawMessage = new PrinterRawMessage(txtData);
+//        TxtDataManageService.insertTxtData(txtData, printerID);
+        TxtDataManageService.insertTxtData(printerRawMessage, printerID);
         printerStatistic.analyzeTxtData(txtData);
         TxtDataManageService.insertStatisticData(printerStatistic);
         HashMap<String, Object> jsonMap = new HashMap<>(5);

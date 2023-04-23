@@ -1,6 +1,7 @@
 package pojo;
 
 import java.util.TimerTask;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
@@ -18,20 +19,25 @@ public class StatisticTime {
     private TimerTask task;
     private boolean isRunning;
 
+    private ScheduledFuture<?> future;
     public StatisticTime() {
         this(0);
     }
 
     public StatisticTime(long timeValue) {
+        future = null;
         timeCounter = timeValue;
         ThreadFactory threadFactory = new ThreadFactory() {
             private AtomicInteger threadNumber = new AtomicInteger(0);
             @Override
             public Thread newThread(Runnable r) {
-                return new Thread(r, "StatisticTimeThread" + threadNumber.getAndIncrement());
+
+                Thread t = new Thread(r, "StatisticTimeThread" + threadNumber.getAndIncrement());
+                t.setDaemon(false);
+                return t;
             }
         };
-        this.executorService = new ScheduledThreadPoolExecutor(1, threadFactory);
+        this.executorService = new ScheduledThreadPoolExecutor(2, threadFactory);
         task = new TimerTask() {
             @Override
             public void run() {
@@ -44,14 +50,17 @@ public class StatisticTime {
     public void start() {
         if (!isRunning) {
             // 1000ms执行一次
-            executorService.scheduleAtFixedRate(task, 0, 1000, TimeUnit.MILLISECONDS);
+            future = executorService.scheduleAtFixedRate(task, 0, 1000, TimeUnit.MILLISECONDS);
             isRunning = true;
         }
     }
 
     public void stop() {
         if (isRunning) {
-            executorService.shutdown();
+            if (future != null) {
+                future.cancel(true);
+            }
+//            executorService.shutdown();
             isRunning = false;
         }
     }
