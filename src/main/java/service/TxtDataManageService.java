@@ -1,8 +1,11 @@
 package service;
 
 import constants.PrinterStatus;
+import dao.TxtDataDAO;
 import pojo.PrinterRawMessage;
 import pojo.PrinterTreatedMessage;
+
+import java.sql.SQLException;
 
 /**
  * 处理txt数据的服务类
@@ -72,5 +75,7 @@ public class TxtDataManageService {
             }
         }).toArray(Number[]::new);
     }
-
+public static void insertTxtData(String original, int printerId) throws SQLException {
+        TxtDataDAO.insertTxtData(toPrinterTreatedMessage(original), original, printerId);
+    }
 }

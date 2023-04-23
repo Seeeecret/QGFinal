@@ -39,6 +39,20 @@ public class TxtHttpService {
         JSONObject json = new JSONObject();
         json.put("txtData", txtData);
         json.put("method", "txtData");
+        json.put("printerID", 1);
+        StringEntity entity = new StringEntity(json.toString(), ContentType.APPLICATION_JSON);
+        httpPost.setEntity(entity);
+        CloseableHttpResponse response = httpClient.execute(httpPost);
+        response.close();
+    }
+
+    public void sendTxtDataWithID(String txtData, int printerID) throws IOException {
+        HttpPost httpPost = new HttpPost(url);
+        httpPost.setHeader("Content-Type", "application/json");
+        JSONObject json = new JSONObject();
+        json.put("txtData", txtData);
+        json.put("method", "txtData");
+        json.put("printerID", printerID);
         StringEntity entity = new StringEntity(json.toString(), ContentType.APPLICATION_JSON);
         httpPost.setEntity(entity);
         CloseableHttpResponse response = httpClient.execute(httpPost);

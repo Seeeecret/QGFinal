@@ -2,8 +2,6 @@ package controller;
 
 import com.alibaba.fastjson.JSONObject;
 import dao.TxtWatcherThread;
-import pojo.PrinterRawMessage;
-import pojo.PrinterTreatedMessage;
 import service.TxtDataManageService;
 import utils.Mapper;
 
@@ -11,6 +9,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.HashMap;
 
 /**
@@ -27,13 +26,14 @@ public class TxtDataServlet extends BaseServlet {
      */
     public void txtData(HttpServletRequest request,
                         HttpServletResponse response, JSONObject jsonObject)
-            throws IOException {
+            throws IOException, SQLException {
 
         String method = jsonObject.getString("method");
         String txtData = jsonObject.getString("txtData");
-        PrinterRawMessage printerRawMessage = TxtDataManageService.toPrinterRawMessage(txtData);
-        PrinterTreatedMessage printerTreatedMessage = TxtDataManageService.toPrinterTreatedMessage(txtData);
-        System.out.println(printerTreatedMessage);
+        int printerID = jsonObject.getInteger("printerID");
+//        PrinterRawMessage printerRawMessage = TxtDataManageService.toPrinterRawMessage(txtData);
+//        PrinterTreatedMessage printerTreatedMessage = TxtDataManageService.toPrinterTreatedMessage(txtData);
+        TxtDataManageService.insertTxtData(txtData, printerID);
         HashMap<String, Object> jsonMap = new HashMap<>(5);
         jsonMap.put("msg", "请求响应成功");
         jsonMap.put("code", 200);
