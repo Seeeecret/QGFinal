@@ -75,7 +75,15 @@ public class TxtDataManageService {
             }
         }).toArray(Number[]::new);
     }
-public static void insertTxtData(String original, int printerId) throws SQLException {
+
+    /**
+     * 插入txt数据至数据库中,DAO层代码的封装
+     *
+     * @param original  原始语句
+     * @param printerId 打印机id
+     * @throws SQLException sqlexception异常
+     */
+    public static void insertTxtData(String original, int printerId) throws SQLException {
         TxtDataDAO.insertTxtData(toPrinterTreatedMessage(original), original, printerId);
     }
 }

@@ -1,6 +1,6 @@
 package dao;
 
-import service.TxtHttpService;
+import service.TxtDataHttpService;
 
 import java.io.*;
 import java.nio.file.*;
@@ -82,8 +82,8 @@ public class TxtWatcher {
         WatchService watcher = txtWatcher.getWatcher();
 //        读文件的对象
         RandomAccessFile randomAccessFile = null;
-        TxtHttpService txtHttpService;
-        txtHttpService = new TxtHttpService();
+        TxtDataHttpService txtDataHttpService;
+        txtDataHttpService = new TxtDataHttpService();
         InputStreamReader isr = null;
         BufferedReader br = null;
 //        注释掉的代码为第一版中使用randomAccessFile记录lastPosition的代码,这里不关闭的话会不会有问题?
@@ -119,7 +119,7 @@ public class TxtWatcher {
 
 //                换成发送到服务器的方法
                 System.out.println(content+ "发送到服务器");
-//                txtHttpService.sendTxtData(content);
+//                txtDataHttpService.sendTxtData(content);
             } catch (InterruptedException | IOException e) {
                 throw new RuntimeException(e);
             }

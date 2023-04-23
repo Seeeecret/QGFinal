@@ -1,6 +1,6 @@
 package dao;
 
-import service.TxtHttpService;
+import service.TxtDataHttpService;
 
 import java.io.*;
 import java.nio.file.*;
@@ -25,8 +25,8 @@ public class TxtWatcherThread extends Thread {
         WatchService watcher = txtWatcher.getWatcher();
 //        读文件的对象
         RandomAccessFile randomAccessFile = null;
-        TxtHttpService txtHttpService;
-        txtHttpService = new TxtHttpService();
+        TxtDataHttpService txtDataHttpService;
+        txtDataHttpService = new TxtDataHttpService();
         InputStreamReader isr = null;
         BufferedReader br = null;
 //        虽然生成样例的程序显示的都是英文，自己调试时时看出不出来影响。但题目要求是GBK编码，所以这里要用GBK编码
@@ -58,7 +58,7 @@ public class TxtWatcherThread extends Thread {
 
 //                换成发送到服务器的方法
 //                System.out.println(content);
-                txtHttpService.sendTxtData(content);
+                txtDataHttpService.sendTxtData(content);
             } catch (InterruptedException | IOException e) {
                 throw new RuntimeException(e);
             }
