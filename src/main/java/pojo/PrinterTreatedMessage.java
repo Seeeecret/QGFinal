@@ -2,6 +2,8 @@ package pojo;
 
 import constants.PrinterStatus;
 
+import java.sql.Timestamp;
+
 /**
  * 打印机的处理过后的消息
  *
@@ -10,6 +12,11 @@ import constants.PrinterStatus;
  */
 public class PrinterTreatedMessage {
     public PrinterStatus printerStatus;
+/*
+ 这里的timeStamp是java.sql包下的，与PrinterRawMessage中的long类的timeStamp不同,
+ 其本身是毫秒单位的本时区的时间戳，针对CRUD操作有相应方法的封装
+*/
+    public Timestamp timestamp;
     public String paramDescription;
 
     public Number firstParam;
@@ -25,6 +32,7 @@ public class PrinterTreatedMessage {
     public PrinterTreatedMessage(PrinterRawMessage printerRawMessage) {
         this.printerStatus = printerRawMessage.getPrinterStatusByStatusValue();
         this.paramDescription = this.printerStatus.getParamsDescription(printerRawMessage);
+        this.timestamp = new Timestamp(printerRawMessage.getTimestamp()*1000);
         Object[] objectArray = printerRawMessage.
                 getParams().stream().map(param -> {
                     try {
@@ -66,10 +74,15 @@ public class PrinterTreatedMessage {
         return secondParam;
     }
 
+    public Timestamp getTimestamp() {
+        return timestamp;
+    }
+
     @Override
     public String toString() {
         return "PrinterTreatedMessage{" +
                 "printerStatus=" + printerStatus +
+                ", timestamp=" + timestamp.getTime()/1000 +
                 ", paramDescription='" + paramDescription + '\'' +
                 ", firstParam=" + firstParam +
                 ", secondParam='" + secondParam + '\'' +

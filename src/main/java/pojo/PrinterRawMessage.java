@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
  * @author Secret
  */
 public class PrinterRawMessage {
+
     private long timestamp;
     private int statusValue;
     private LinkedList<String> params;
