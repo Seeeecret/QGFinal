@@ -2,6 +2,7 @@ package controller;
 
 import com.alibaba.fastjson.JSONObject;
 import dao.TxtWatcherThread;
+import pojo.PrinterStatistic;
 import service.TxtDataManageService;
 import utils.Mapper;
 
@@ -31,9 +32,10 @@ public class TxtDataServlet extends BaseServlet {
         String method = jsonObject.getString("method");
         String txtData = jsonObject.getString("txtData");
         int printerID = jsonObject.getInteger("printerID");
-//        PrinterRawMessage printerRawMessage = TxtDataManageService.toPrinterRawMessage(txtData);
-//        PrinterTreatedMessage printerTreatedMessage = TxtDataManageService.toPrinterTreatedMessage(txtData);
+        PrinterStatistic printerStatistic = new PrinterStatistic(printerID);
         TxtDataManageService.insertTxtData(txtData, printerID);
+        printerStatistic.analyzeTxtData(txtData);
+        TxtDataManageService.insertStatisticData(printerStatistic);
         HashMap<String, Object> jsonMap = new HashMap<>(5);
         jsonMap.put("msg", "请求响应成功");
         jsonMap.put("code", 200);
@@ -46,7 +48,7 @@ public class TxtDataServlet extends BaseServlet {
      *
      * @param request  请求
      * @param response 响应
-     * @throws IOException      ioexception
+     * @throws IOException ioexception
      */
     public void txtDataThread(HttpServletRequest request,
                               HttpServletResponse response) throws IOException {

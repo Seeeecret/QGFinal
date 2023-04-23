@@ -1,8 +1,9 @@
 package service;
 
 import constants.PrinterStatus;
-import dao.TxtDataDAO;
+import dao.TxtDAO;
 import pojo.PrinterRawMessage;
+import pojo.PrinterStatistic;
 import pojo.PrinterTreatedMessage;
 
 import java.sql.SQLException;
@@ -84,6 +85,11 @@ public class TxtDataManageService {
      * @throws SQLException sqlexception异常
      */
     public static void insertTxtData(String original, int printerId) throws SQLException {
-        TxtDataDAO.insertTxtData(toPrinterTreatedMessage(original), original, printerId);
+        TxtDAO.insertTxtData(toPrinterTreatedMessage(original), original, printerId);
     }
+
+    public static void insertStatisticData(PrinterStatistic printerStatistic) throws SQLException {
+        TxtDAO.insertStatisticData(printerStatistic);
+    }
+
 }

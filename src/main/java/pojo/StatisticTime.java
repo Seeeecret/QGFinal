@@ -6,22 +6,31 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
+/**
+ * 统计四项时间的类,封装了依赖计时器的计时方法
+ *
+ * @author Secret
+ */
 public class StatisticTime {
 
     private long timeCounter;
-    private final ScheduledThreadPoolExecutor executorService;
-    private final TimerTask task;
+    private ScheduledThreadPoolExecutor executorService;
+    private TimerTask task;
     private boolean isRunning;
 
     public StatisticTime() {
+        this(0);
+    }
+
+    public StatisticTime(long timeValue) {
+        timeCounter = timeValue;
         ThreadFactory threadFactory = new ThreadFactory() {
             private AtomicInteger threadNumber = new AtomicInteger(0);
             @Override
             public Thread newThread(Runnable r) {
-                return new Thread(r, "StatisticTimeThread"+threadNumber.getAndIncrement());
+                return new Thread(r, "StatisticTimeThread" + threadNumber.getAndIncrement());
             }
         };
-        this.timeCounter = 0;
         this.executorService = new ScheduledThreadPoolExecutor(1, threadFactory);
         task = new TimerTask() {
             @Override
@@ -46,6 +55,11 @@ public class StatisticTime {
             isRunning = false;
         }
     }
+
+    public long getTimeCounter() {
+        return timeCounter;
+    }
+
 
 
 }

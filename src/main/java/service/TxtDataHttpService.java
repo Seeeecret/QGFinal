@@ -59,6 +59,8 @@ public class TxtDataHttpService {
         response.close();
     }
 
+
+
     public void closeClient() throws IOException {
         httpClient.close();
     }
