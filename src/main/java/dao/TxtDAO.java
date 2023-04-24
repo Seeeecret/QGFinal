@@ -33,16 +33,18 @@ public class TxtDAO {
      * 因为这里的时间是从电脑中读取的，而不是从打印机中读取的，所以可能会有一定的误差
      *
      * @param printerStatistic 打印机统计
+     * @param longTimestamp    长时间戳
+     * @param printerID        打印机id
      * @throws SQLException sqlexception异常
      */
-    public static void insertStatisticData(PrinterStatistic printerStatistic) throws SQLException {
-        Timestamp statisticTime = new Timestamp(System.currentTimeMillis());
+    public static void insertStatisticData(PrinterStatistic printerStatistic, long longTimestamp, int printerID) throws SQLException {
+        Timestamp statisticTime = new Timestamp(longTimestamp*1000);
         LocalTime onTime = LocalTime.ofSecondOfDay(printerStatistic.getOnTime().getTimeCounter());
         LocalTime printTime = LocalTime.ofSecondOfDay(printerStatistic.getPrintTime().getTimeCounter());
         LocalTime idleTime = LocalTime.ofSecondOfDay(printerStatistic.getIdleTime().getTimeCounter());
         LocalTime exceptionTime = LocalTime.ofSecondOfDay(printerStatistic.getExceptionTime().getTimeCounter());
         CRUDUtil.executeCommonInsert("insert into printer_statistic values (?,?,?,?,?,?)"
-                , printerStatistic.getPrinterID()
+                , printerID
                 , statisticTime, onTime, printTime, idleTime, exceptionTime);
 
     }

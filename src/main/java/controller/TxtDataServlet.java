@@ -15,6 +15,12 @@ import java.sql.SQLException;
 import java.util.HashMap;
 
 
+/**
+ * 服务器上接受请求,处理txt数据的servlet
+ *
+ * @author Secret
+ * @date 2023/04/24
+ */
 @WebServlet("/txtData")
 public class TxtDataServlet extends BaseServlet {
     private static HashMap<Integer,PrinterStatistic> printerStatisticHashMap = new HashMap<>(10);
@@ -52,7 +58,7 @@ public class TxtDataServlet extends BaseServlet {
 //        TxtDataManageService.insertTxtData(txtData, printerID);
         TxtDataManageService.insertTxtData(printerRawMessage, printerID);
         printerStatistic.analyzeTxtData(txtData);
-        TxtDataManageService.insertStatisticData(printerStatistic);
+        TxtDataManageService.insertStatisticData(printerStatistic, printerRawMessage, printerID);
         HashMap<String, Object> jsonMap = new HashMap<>(5);
         jsonMap.put("msg", "请求响应成功");
         jsonMap.put("code", 200);
@@ -77,7 +83,5 @@ public class TxtDataServlet extends BaseServlet {
         jsonMap.put("code", 200);
         jsonMap.put("msg", "请求响应成功");
         Mapper.writeValue(response.getWriter(), jsonMap);
-//        request.setAttribute("method","txtData");
-//        request.getRequestDispatcher("/txtData").forward(request,response);
     }
 }

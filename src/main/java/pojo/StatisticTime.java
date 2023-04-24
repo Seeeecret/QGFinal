@@ -8,7 +8,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * 统计四项时间的类,封装了依赖计时器的计时方法
+ * 统计四项时间的类,封装了依赖计时器的计时方法,也存储的统计时间数据的值
  *
  * @author Secret
  */

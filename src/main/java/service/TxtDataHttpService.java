@@ -11,6 +11,8 @@ import org.apache.http.impl.client.HttpClients;
 import java.io.IOException;
 
 /**
+ * 用于发送txt数据到服务器
+ *
  * @author Secret
  */
 public class TxtDataHttpService {

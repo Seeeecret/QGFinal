@@ -9,7 +9,7 @@ import pojo.PrinterTreatedMessage;
 import java.sql.SQLException;
 
 /**
- * 处理txt数据的服务类
+ * 专门处理txt数据的服务类,供controller层调用
  *
  * @author Secret
  */
@@ -91,8 +91,8 @@ public class TxtDataManageService {
         TxtDAO.insertTxtData(new PrinterTreatedMessage(printerRawMessage), printerRawMessage.getOriginal(), printerId);
     }
 
-    public static void insertStatisticData(PrinterStatistic printerStatistic) throws SQLException {
-        TxtDAO.insertStatisticData(printerStatistic);
+    public static void insertStatisticData(PrinterStatistic printerStatistic, PrinterRawMessage printerRawMessage, int printerID) throws SQLException {
+        TxtDAO.insertStatisticData(printerStatistic,printerRawMessage.getTimestamp(),printerID);
     }
 
 }

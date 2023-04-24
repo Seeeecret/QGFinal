@@ -4,13 +4,12 @@ import constants.PrinterStatus;
 import service.TxtDataManageService;
 
 /**
- * 存储打印机统计时间的类/对象
+ * 存储打印机统计时间的外部封装类
  *
  * @author Secret
  * @date 2023/04/23
  */
 public class PrinterStatistic {
-    private int printerID;
     private StatisticTime onTime;
     private StatisticTime printTime;
     private StatisticTime idleTime;
@@ -23,9 +22,8 @@ public class PrinterStatistic {
 
 
     public PrinterStatistic(long onTimeStartedValue,long printTimeStartedValue,
-                            long idleTimeStartedValue,long exceptionTimeStartedValue,
-                            int printerID) {
-        this.printerID = printerID;
+                            long idleTimeStartedValue,long exceptionTimeStartedValue) {
+//        this.printerID = printerID;
         onTime = new StatisticTime(onTimeStartedValue);
         printTime = new StatisticTime(printTimeStartedValue);
         idleTime = new StatisticTime(idleTimeStartedValue);
@@ -35,19 +33,15 @@ public class PrinterStatistic {
         idleTimeFlag = false;
         exceptionTimeFlag = false;
     }
-    public PrinterStatistic(long allStartedValue,int printerID) {
-        this(allStartedValue,allStartedValue,allStartedValue,allStartedValue,printerID);
-    }
-
-    public PrinterStatistic(int printerID){
-        this(0,printerID);
+    public PrinterStatistic(long allStartedValue) {
+        this(allStartedValue,allStartedValue,allStartedValue,allStartedValue);
     }
 
     /**
      * 默认构造函数,默认所有时间都为0,打印机ID为1
      */
     public PrinterStatistic() {
-        this(0,1);
+        this(0);
     }
     /**
      * 分析字符串信息,再根据分析得到打印机状态更新统计时间
@@ -165,7 +159,4 @@ public class PrinterStatistic {
         return exceptionTime;
     }
 
-    public int getPrinterID() {
-        return printerID;
-    }
 }
