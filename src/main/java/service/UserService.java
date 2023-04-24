@@ -1,7 +1,7 @@
 package service;
 
 import dao.UserDAO;
-import pojo.User;
+import pojo.po.User;
 import utils.CRUDUtil;
 
 import java.sql.Connection;

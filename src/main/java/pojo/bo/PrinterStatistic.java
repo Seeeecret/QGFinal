@@ -1,6 +1,8 @@
-package pojo;
+package pojo.bo;
 
 import constants.PrinterStatus;
+import pojo.po.PrinterTreatedMessage;
+import pojo.po.StatisticTime;
 import service.TxtDataManageService;
 
 /**

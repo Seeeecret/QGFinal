@@ -1,6 +1,7 @@
-package pojo;
+package pojo.po;
 
 import constants.PrinterStatus;
+import pojo.bo.PrinterRawMessage;
 
 import java.sql.Timestamp;
 

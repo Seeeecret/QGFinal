@@ -1,8 +1,8 @@
 package dao;
 
 import constants.PrinterStatus;
-import pojo.PrinterStatistic;
-import pojo.PrinterTreatedMessage;
+import pojo.bo.PrinterStatistic;
+import pojo.po.PrinterTreatedMessage;
 import utils.CRUDUtil;
 
 import java.sql.SQLException;

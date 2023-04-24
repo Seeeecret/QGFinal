@@ -2,9 +2,9 @@ package service;
 
 import constants.PrinterStatus;
 import dao.TxtDAO;
-import pojo.PrinterRawMessage;
-import pojo.PrinterStatistic;
-import pojo.PrinterTreatedMessage;
+import pojo.bo.PrinterRawMessage;
+import pojo.bo.PrinterStatistic;
+import pojo.po.PrinterTreatedMessage;
 
 import java.sql.SQLException;
 

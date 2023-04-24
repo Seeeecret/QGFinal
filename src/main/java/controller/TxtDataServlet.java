@@ -2,8 +2,8 @@ package controller;
 
 import com.alibaba.fastjson.JSONObject;
 import dao.TxtWatcherThread;
-import pojo.PrinterRawMessage;
-import pojo.PrinterStatistic;
+import pojo.bo.PrinterRawMessage;
+import pojo.bo.PrinterStatistic;
 import service.TxtDataManageService;
 import utils.Mapper;
 
