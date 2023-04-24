@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>meritMenu</title>
+    <script src="webjars/jquery/3.6.4/jquery.js"></script>
+    <link rel="stylesheet" href="meritMenuCSS.css">
+</head>
+<body>
+<p id="output"></p>
+<div id="meritValue"></div>
+<br>
+<p align="center">
+    <img src="resources/Wooden_Fish.png" alt="我是木鱼" id="MeritBtn" height=200 width=200>
+</p>
+<br>
+<p align="center">
+    <button type="button" id="QuitBtn" name="QuitBtn">退出登陆</button>
+</p>
+</body>
+<script>//动态展示数据
+const urlParams = new URLSearchParams(window.location.search);
+const webUsername = urlParams.get('username');
+$(document).ready(function () {
+    // 发送 Ajax 请求获取数据
+    $(function () {
+        if (webUsername !== localStorage.getItem("username")) {
+            alert("Please login first");
+            window.location.href = "http://localhost:8080/QGFinal_war/loginMenu.html";
+        }
+    });
+    $.ajax({
+        url: 'http://localhost:8080/QGFinal_war/user',
+        type: 'get',
+        data: {
+            username: webUsername,
+            method: "queryMerit"
+        },
+        dataType: 'json',
+        success: function (response) {
+            // 渲染数据到网页上
+            let merit = response.data;
+            $('#output').html("<h2><font face=\"楷体\">尊敬的用户 " + webUsername + " ,您的当前功德为:</font></h2>");
+            $("#meritValue").html(merit);
+        },
+        error: function () {
+            alert("System error");
+        }
+    });
+
+    $("#MeritBtn").click(function () {
+        $.ajax({
+            url: 'http://localhost:8080/QGFinal_war/user',
+            type: 'get',
+            data: {
+                username: webUsername,
+                method: "addMerit"
+            },
+            dataType: 'json',
+            success: function (response) {
+                // 渲染数据到网页上
+                if (response.code === 200) {
+                    let merit = response.data;
+                    $("#meritValue").html(merit);
+                } else {
+                    alert(response.msg);
+                }
+            },
+            error: function () {
+                alert("System error");
+            }
+        });
+    });
+    $("#QuitBtn").click(function () {
+        localStorage.clear();
+        localStorage.removeItem("username");
+        window.location.href = "http://localhost:8080/QGFinal_war/loginMenu.html";
+
+    });
+
+});
+</script>
+</html>
