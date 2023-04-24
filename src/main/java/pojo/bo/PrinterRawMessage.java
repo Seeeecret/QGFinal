@@ -1,4 +1,4 @@
-package pojo;
+package pojo.bo;
 import constants.PrinterStatus;
 
 import java.util.*;

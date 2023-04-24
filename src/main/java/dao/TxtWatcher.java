@@ -1,6 +1,6 @@
 package dao;
 
-import service.TxtHttpService;
+import service.TxtDataHttpService;
 
 import java.io.*;
 import java.nio.file.*;
@@ -70,26 +70,18 @@ public class TxtWatcher {
     /**
      * 开始监听
      *
-     * @throws FileNotFoundException 文件未发现异常
      */
-    public void watch() throws FileNotFoundException {
-        //        监听对象
-//        之后下面的方法可以替换成TxtWatcher的watch()方法
-
-//        监听对象
-        TxtWatcher txtWatcher = new TxtWatcher();
-//        之后下面的方法可以替换成TxtWatcher的watch()方法
-        WatchService watcher = txtWatcher.getWatcher();
+    public void watch() {
+        WatchService watcher = this.getWatcher();
 //        读文件的对象
-        RandomAccessFile randomAccessFile = null;
-        TxtHttpService txtHttpService;
-        txtHttpService = new TxtHttpService();
+        TxtDataHttpService txtDataHttpService;
+        txtDataHttpService = new TxtDataHttpService();
         InputStreamReader isr = null;
         BufferedReader br = null;
 //        注释掉的代码为第一版中使用randomAccessFile记录lastPosition的代码,这里不关闭的话会不会有问题?
         try {
 //            randomAccessFile = new RandomAccessFile(txtWatcher.getTxtFile(), "r");
-            isr = new InputStreamReader(new FileInputStream(txtWatcher.getTxtFile()), "GBK");
+            isr = new InputStreamReader(new FileInputStream(this.getTxtFile()), "GBK");
             br = new BufferedReader(isr);
         } catch (FileNotFoundException | UnsupportedEncodingException e) {
             throw new RuntimeException(e);
@@ -104,7 +96,7 @@ public class TxtWatcher {
                     WatchEvent.Kind<?> kind = event.kind();
                     Path fileName = (Path) event.context();
                     if (kind == StandardWatchEventKinds.ENTRY_MODIFY
-                            && fileName.toString().equals(txtWatcher.getTxtFile().getName())) {
+                            && fileName.toString().equals(this.getTxtFile().getName())) {
 //                        randomAccessFile.seek(lastPosition);
                         content = br.readLine();
 //                        lastPosition = randomAccessFile.length();
@@ -118,8 +110,7 @@ public class TxtWatcher {
                 }
 
 //                换成发送到服务器的方法
-                System.out.println(content+ "发送到服务器");
-//                txtHttpService.sendTxtData(content);
+                txtDataHttpService.sendTxtData(content);
             } catch (InterruptedException | IOException e) {
                 throw new RuntimeException(e);
             }

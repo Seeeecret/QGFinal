@@ -1,14 +1,15 @@
 package service;
 
 import constants.PrinterStatus;
-import dao.TxtDataDAO;
-import pojo.PrinterRawMessage;
-import pojo.PrinterTreatedMessage;
+import dao.TxtDAO;
+import pojo.bo.PrinterRawMessage;
+import pojo.bo.PrinterStatistic;
+import pojo.po.PrinterTreatedMessage;
 
 import java.sql.SQLException;
 
 /**
- * 处理txt数据的服务类
+ * 专门处理txt数据的服务类,供controller层调用
  *
  * @author Secret
  */
@@ -75,7 +76,23 @@ public class TxtDataManageService {
             }
         }).toArray(Number[]::new);
     }
-public static void insertTxtData(String original, int printerId) throws SQLException {
-        TxtDataDAO.insertTxtData(toPrinterTreatedMessage(original), original, printerId);
+
+    /**
+     * 插入txt数据至数据库中,DAO层代码的封装
+     *
+     * @param original  原始语句
+     * @param printerId 打印机id
+     * @throws SQLException sqlexception异常
+     */
+    public static void insertTxtData(String original, int printerId) throws SQLException {
+        TxtDAO.insertTxtData(toPrinterTreatedMessage(original), original, printerId);
     }
+    public static void insertTxtData(PrinterRawMessage printerRawMessage, int printerId) throws SQLException {
+        TxtDAO.insertTxtData(new PrinterTreatedMessage(printerRawMessage), printerRawMessage.getOriginal(), printerId);
+    }
+
+    public static void insertStatisticData(PrinterStatistic printerStatistic, PrinterRawMessage printerRawMessage, int printerID) throws SQLException {
+        TxtDAO.insertStatisticData(printerStatistic,printerRawMessage.getTimestamp(),printerID);
+    }
+
 }

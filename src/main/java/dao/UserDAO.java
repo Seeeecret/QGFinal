@@ -1,6 +1,6 @@
 package dao;
 
-import pojo.User;
+import pojo.po.User;
 import utils.CRUDUtil;
 
 import java.sql.Connection;
@@ -11,7 +11,8 @@ import java.sql.SQLException;
 public class UserDAO {
     public static User query(Connection connection, String username) {
         User user = null;
-        try (PreparedStatement statement = connection.prepareStatement("SELECT * FROM user_merit WHERE username = ?")) {
+        try{
+        PreparedStatement statement = connection.prepareStatement("SELECT * FROM user_merit WHERE username = ?");
             statement.setString(1, username);
             try (ResultSet resultSet = statement.executeQuery()) {
                 if (resultSet.next()) {
@@ -32,37 +33,42 @@ public class UserDAO {
     }
 
 
-    public static int insert(Connection connection, User user) {
-        int i = 0;
-        try (PreparedStatement statement = connection.prepareStatement("INSERT INTO user_merit (username, password) VALUES (?, ?)")) {
-            statement.setString(1, user.getUsername());
-            statement.setString(2, user.getPassword());
-            i = statement.executeUpdate();
-            CRUDUtil.close(statement);
-            return i;
+    public static void insert(Connection connection, User user) {
+        try  {
+            CRUDUtil.executeSpecialInsert("user","username,password","(" + user.getUsername()+","+user.getPassword()+")");
+//            PreparedStatement statement = connection.prepareStatement("INSERT INTO user_merit (username, password) VALUES (?, ?)");
+//            statement.setString(1, user.getUsername());
+//            statement.setString(2, user.getPassword());
+//            i = statement.executeUpdate();
+//            CRUDUtil.close(statement);
+//            return i;
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public static int update(Connection connection, User user) {
-        try (PreparedStatement statement = connection.prepareStatement("UPDATE user_merit SET password = ? WHERE username = ?")) {
-            statement.setString(1, user.getPassword());
-            statement.setString(2, user.getUsername());
-            int i = statement.executeUpdate();
-            CRUDUtil.close(statement);
-            return i;
+    public static void update(Connection connection, User user) {
+        try {
+            CRUDUtil.executeSpecialUpdate("user","where username= "+user.getUsername(),"password = "+user.getPassword());
+//            PreparedStatement statement = connection.prepareStatement("UPDATE user_merit SET password = ? WHERE username = ?");
+//            statement.setString(1, user.getPassword());
+//            statement.setString(2, user.getUsername());
+//            int i = statement.executeUpdate();
+//            CRUDUtil.close(statement);
+//            return i;
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public static int delete(Connection connection, String username) {
-        try (PreparedStatement statement = connection.prepareStatement("DELETE FROM user_merit WHERE username = ?")) {
-            statement.setString(1, username);
-            int i = statement.executeUpdate();
-            CRUDUtil.close(statement);
-            return i;
+    public static void delete(Connection connection, String username) {
+        try  {
+            CRUDUtil.executeSpecialDelete("user","username = "+username);
+//            PreparedStatement statement = connection.prepareStatement("DELETE FROM user_merit WHERE username = ?");
+//            statement.setString(1, username);
+//            int i = statement.executeUpdate();
+//            CRUDUtil.close(statement);
+//            return i;
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }

@@ -1,6 +1,6 @@
 package constants;
 
-import pojo.PrinterRawMessage;
+import pojo.bo.PrinterRawMessage;
 
 /**
  * 打印机状态

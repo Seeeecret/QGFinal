@@ -1,7 +1,7 @@
 package controller;
 
 import dao.UserDAO;
-import pojo.User;
+import pojo.po.User;
 import service.UserService;
 import utils.Mapper;
 
