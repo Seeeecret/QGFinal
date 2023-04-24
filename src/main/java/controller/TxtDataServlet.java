@@ -51,13 +51,13 @@ public class TxtDataServlet extends BaseServlet {
         if(printerStatisticHashMap. containsKey(printerID)){
             printerStatistic = printerStatisticHashMap.get(printerID);
         }else {
-            printerStatistic = new PrinterStatistic(printerID);
+            printerStatistic = new PrinterStatistic(0);
             printerStatisticHashMap.put(printerID,printerStatistic);
         }
         PrinterRawMessage printerRawMessage = new PrinterRawMessage(txtData);
 //        TxtDataManageService.insertTxtData(txtData, printerID);
-        TxtDataManageService.insertTxtData(printerRawMessage, printerID);
         printerStatistic.analyzeTxtData(txtData);
+        TxtDataManageService.insertTxtData(printerRawMessage, printerID);
         TxtDataManageService.insertStatisticData(printerStatistic, printerRawMessage, printerID);
         HashMap<String, Object> jsonMap = new HashMap<>(5);
         jsonMap.put("msg", "请求响应成功");

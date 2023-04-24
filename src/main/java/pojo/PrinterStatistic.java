@@ -23,7 +23,6 @@ public class PrinterStatistic {
 
     public PrinterStatistic(long onTimeStartedValue,long printTimeStartedValue,
                             long idleTimeStartedValue,long exceptionTimeStartedValue) {
-//        this.printerID = printerID;
         onTime = new StatisticTime(onTimeStartedValue);
         printTime = new StatisticTime(printTimeStartedValue);
         idleTime = new StatisticTime(idleTimeStartedValue);
@@ -64,7 +63,8 @@ public class PrinterStatistic {
 
     public void analyzeTxtData(PrinterStatus printerStatus){
         switch (printerStatus) {
-
+            case WORK_NAME_STRING:
+                break;
             case WORK_NOT_STARTED:
                 if (!onTimeFlag) {
                     onTime.start();

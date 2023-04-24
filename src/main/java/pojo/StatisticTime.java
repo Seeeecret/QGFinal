@@ -50,7 +50,7 @@ public class StatisticTime {
     public void start() {
         if (!isRunning) {
             // 1000ms执行一次
-            future = executorService.scheduleAtFixedRate(task, 0, 1000, TimeUnit.MILLISECONDS);
+            future = executorService.scheduleAtFixedRate(task, 0, 1, TimeUnit.SECONDS);
             isRunning = true;
         }
     }

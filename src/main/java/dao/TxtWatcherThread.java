@@ -19,12 +19,9 @@ public class TxtWatcherThread extends Thread {
     @Override
     public void run() {
 
-//        监听对象
         TxtWatcher txtWatcher = new TxtWatcher();
 //        之后下面的方法可以替换成TxtWatcher的watch()方法
         WatchService watcher = txtWatcher.getWatcher();
-//        读文件的对象
-        RandomAccessFile randomAccessFile = null;
         TxtDataHttpService txtDataHttpService;
         txtDataHttpService = new TxtDataHttpService();
         InputStreamReader isr = null;
