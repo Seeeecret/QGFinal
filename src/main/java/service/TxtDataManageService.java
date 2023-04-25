@@ -5,8 +5,11 @@ import dao.TxtDAO;
 import pojo.bo.PrinterRawMessage;
 import pojo.bo.PrinterStatistic;
 import pojo.po.PrinterTreatedMessage;
+import pojo.po.StatisticTime;
 
 import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.util.HashMap;
 
 /**
  * 专门处理txt数据的服务类,供controller层调用
@@ -85,14 +88,26 @@ public class TxtDataManageService {
      * @throws SQLException sqlexception异常
      */
     public static void insertTxtData(String original, int printerId) throws SQLException {
-        TxtDAO.insertTxtData(toPrinterTreatedMessage(original), original, printerId);
+        insertTxtData(new PrinterRawMessage(original), printerId);
     }
     public static void insertTxtData(PrinterRawMessage printerRawMessage, int printerId) throws SQLException {
-        TxtDAO.insertTxtData(new PrinterTreatedMessage(printerRawMessage), printerRawMessage.getOriginal(), printerId);
+        PrinterTreatedMessage printerTreatedMessage = new PrinterTreatedMessage(printerRawMessage);
+        HashMap<String, Object> paramsHashMap = new HashMap<>();
+        if(printerTreatedMessage.getFirstParam()!=null) {
+            paramsHashMap.put("firstParam",printerTreatedMessage.getFirstParam());
+        }
+        if(printerTreatedMessage.getSecondParam()!=null) {
+            paramsHashMap.put("secondParam",printerTreatedMessage.getSecondParam());
+        }
+        TxtDAO.insertTxtData(new PrinterTreatedMessage(printerRawMessage), paramsHashMap, printerId);
     }
 
     public static void insertStatisticData(PrinterStatistic printerStatistic, PrinterRawMessage printerRawMessage, int printerID) throws SQLException {
-        TxtDAO.insertStatisticData(printerStatistic,printerRawMessage.getTimestamp(),printerID);
+        StatisticTime statisticTime = new StatisticTime(printerStatistic.getOnTime()
+                ,printerStatistic.getPrintTime(),printerStatistic.getIdleTime()
+                ,printerStatistic.getExceptionTime());
+        Timestamp txtDataTimestamp = new Timestamp(printerRawMessage.getTimestamp()*1000);
+        TxtDAO.insertStatisticData(statisticTime,txtDataTimestamp,printerID);
     }
 
 }

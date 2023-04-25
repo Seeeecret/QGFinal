@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import dao.TxtWatcherThread;
 import pojo.bo.PrinterRawMessage;
 import pojo.bo.PrinterStatistic;
+import pojo.dto.ResponseResultSet;
 import service.TxtDataManageService;
 import utils.Mapper;
 
@@ -55,14 +56,10 @@ public class TxtDataServlet extends BaseServlet {
             printerStatisticHashMap.put(printerID,printerStatistic);
         }
         PrinterRawMessage printerRawMessage = new PrinterRawMessage(txtData);
-//        TxtDataManageService.insertTxtData(txtData, printerID);
         printerStatistic.analyzeTxtData(txtData);
         TxtDataManageService.insertTxtData(printerRawMessage, printerID);
         TxtDataManageService.insertStatisticData(printerStatistic, printerRawMessage, printerID);
-        HashMap<String, Object> jsonMap = new HashMap<>(5);
-        jsonMap.put("msg", "请求响应成功");
-        jsonMap.put("code", 200);
-        Mapper.writeValue(response.getWriter(), jsonMap);
+        Mapper.writeValue(response.getWriter(), ResponseResultSet.success());
 
     }
 
@@ -79,9 +76,9 @@ public class TxtDataServlet extends BaseServlet {
         TxtWatcherThread txtWatcherThread = new TxtWatcherThread();
         txtWatcherThread.start();
 
-        HashMap<String, Object> jsonMap = new HashMap<>(5);
-        jsonMap.put("code", 200);
-        jsonMap.put("msg", "请求响应成功");
-        Mapper.writeValue(response.getWriter(), jsonMap);
+//        HashMap<String, Object> jsonMap = new HashMap<>(5);
+//        jsonMap.put("code", 200);
+//        jsonMap.put("msg", "请求响应成功");
+        Mapper.writeValue(response.getWriter(), ResponseResultSet.success());
     }
 }

@@ -11,31 +11,29 @@ import java.sql.SQLException;
 public class UserDAO {
     public static User query(Connection connection, String username) {
         User user = null;
-        try{
-        PreparedStatement statement = connection.prepareStatement("SELECT * FROM user_merit WHERE username = ?");
-            statement.setString(1, username);
-            try (ResultSet resultSet = statement.executeQuery()) {
-                if (resultSet.next()) {
-                    user = new User();
-                    user.setUsername(resultSet.getString("username"));
-                    user.setPassword(resultSet.getString("password"));
-                    user.setMerit(resultSet.getInt("merit"));
-                    CRUDUtil.close(resultSet);
-                }
-            }
-            finally {
-                CRUDUtil.close(statement);
+        CRUDUtil.ResultSetWrapper queryResultSetWrapper = null;
+        try {
+            queryResultSetWrapper = CRUDUtil.executeCommonQuery("SELECT * FROM user WHERE username = ?", username);
+            ResultSet resultSet = queryResultSetWrapper.getResultSet();
+            if (resultSet.next()) {
+                user = new User();
+                user.setUsername(resultSet.getString("username"));
+                user.setPassword(resultSet.getString("password"));
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
+        } finally {
+            if (queryResultSetWrapper != null) {
+                queryResultSetWrapper.close();
+            }
         }
         return user;
     }
 
 
     public static void insert(Connection connection, User user) {
-        try  {
-            CRUDUtil.executeSpecialInsert("user","username,password","(" + user.getUsername()+","+user.getPassword()+")");
+        try {
+            CRUDUtil.executeSpecialInsert("user", "username,password", "(" + user.getUsername() + "," + user.getPassword() + ")");
 //            PreparedStatement statement = connection.prepareStatement("INSERT INTO user_merit (username, password) VALUES (?, ?)");
 //            statement.setString(1, user.getUsername());
 //            statement.setString(2, user.getPassword());
@@ -49,7 +47,7 @@ public class UserDAO {
 
     public static void update(Connection connection, User user) {
         try {
-            CRUDUtil.executeSpecialUpdate("user","where username= "+user.getUsername(),"password = "+user.getPassword());
+            CRUDUtil.executeSpecialUpdate("user", "where username= " + user.getUsername(), "password = " + user.getPassword());
 //            PreparedStatement statement = connection.prepareStatement("UPDATE user_merit SET password = ? WHERE username = ?");
 //            statement.setString(1, user.getPassword());
 //            statement.setString(2, user.getUsername());
@@ -62,8 +60,8 @@ public class UserDAO {
     }
 
     public static void delete(Connection connection, String username) {
-        try  {
-            CRUDUtil.executeSpecialDelete("user","username = "+username);
+        try {
+            CRUDUtil.executeSpecialDelete("user", "username = " + username);
 //            PreparedStatement statement = connection.prepareStatement("DELETE FROM user_merit WHERE username = ?");
 //            statement.setString(1, username);
 //            int i = statement.executeUpdate();

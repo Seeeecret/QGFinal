@@ -13,15 +13,15 @@ import java.sql.Timestamp;
  */
 public class PrinterTreatedMessage {
     public PrinterStatus printerStatus;
-/*
- 这里的timeStamp是java.sql包下的，与PrinterRawMessage中的long类的timeStamp不同,
- 其本身是毫秒单位的本时区的时间戳，针对CRUD操作有相应方法的封装
-*/
+    /*
+     这里的timeStamp是java.sql包下的，与PrinterRawMessage中的long类的timeStamp不同,
+     其本身是毫秒单位的本时区的时间戳，针对CRUD操作有相应方法的封装
+    */
     public Timestamp timestamp;
     public String paramDescription;
 
-    public Number firstParam;
-    public String secondParam;
+    public Number firstParam = null;
+    public String secondParam = null;
 
     /**
      * 定义一个构造方法，接受一个打印机原始信息，返回处理后的信息
@@ -33,7 +33,7 @@ public class PrinterTreatedMessage {
     public PrinterTreatedMessage(PrinterRawMessage printerRawMessage) {
         this.printerStatus = printerRawMessage.getPrinterStatusByStatusValue();
         this.paramDescription = this.printerStatus.getParamsDescription(printerRawMessage);
-        this.timestamp = new Timestamp(printerRawMessage.getTimestamp()*1000);
+        this.timestamp = new Timestamp(printerRawMessage.getTimestamp() * 1000);
         Object[] objectArray = printerRawMessage.
                 getParams().stream().map(param -> {
                     try {
@@ -83,7 +83,7 @@ public class PrinterTreatedMessage {
     public String toString() {
         return "PrinterTreatedMessage{" +
                 "printerStatus=" + printerStatus +
-                ", timestamp=" + timestamp.getTime()/1000 +
+                ", timestamp=" + timestamp.getTime() / 1000 +
                 ", paramDescription='" + paramDescription + '\'' +
                 ", firstParam=" + firstParam +
                 ", secondParam='" + secondParam + '\'' +

@@ -1,6 +1,7 @@
 package controller;
 
 import dao.UserDAO;
+import pojo.dto.ResponseResultSet;
 import pojo.po.User;
 import service.UserService;
 import utils.Mapper;
@@ -23,7 +24,7 @@ import static constants.RoleConstants.TRUE;
 public class UserServlet extends BaseServlet {
     public void addMerit(HttpServletRequest request,
                          HttpServletResponse response)
-            throws IOException {
+            throws IOException, SQLException {
         // 设置响应内容类型
         HashMap<String, Object> jsonMap = new HashMap<>(5);
         String username = request.getParameter("username");
@@ -49,8 +50,8 @@ public class UserServlet extends BaseServlet {
     }
 
     public void queryMerit(HttpServletRequest request,
-                      HttpServletResponse response)
-            throws IOException {
+                           HttpServletResponse response)
+            throws IOException, SQLException {
         // 设置响应内容类型
         HashMap<String, Object> jsonMap = new HashMap<>(5);
         String username = request.getParameter("username");
@@ -64,91 +65,79 @@ public class UserServlet extends BaseServlet {
 
     public void login(HttpServletRequest request,
                       HttpServletResponse response)
-            throws IOException {
+            throws IOException, SQLException {
         // 设置响应内容类型
         String username = request.getParameter("username");
         String password = request.getParameter("password");
         String remember = request.getParameter("remember");
-        User login;
-        login = UserService.login(username, password);
-        HashMap<String, Object> jsonMap = new HashMap<>(5);
+        User login = UserService.login(username, password);
+
+        ResponseResultSet loginResultSet = null;
         if (login != null) {
-            if(TRUE.equals(remember)) {
+            if (TRUE.equals(remember)) {
                 Cookie usernameCookie = new Cookie("username", username);
                 Cookie passwordCookie = new Cookie("password", password);
                 usernameCookie.setMaxAge(60 * 60 * 24 * 7);
                 passwordCookie.setMaxAge(60 * 60 * 24 * 7);
                 response.addCookie(usernameCookie);
                 response.addCookie(passwordCookie);
-
             }
-            jsonMap.put("code", 200);
-            jsonMap.put("msg", "登陆成功");
-            jsonMap.put("data", login);
+            loginResultSet = ResponseResultSet.success().data("user", login);
+//            jsonMap.put("data", login);
         } else {
-            jsonMap.put("code", 400);
-            jsonMap.put("msg", "登陆失败");
+            loginResultSet = ResponseResultSet.fail();
         }
-        Mapper.writeValue(response.getWriter(), jsonMap);
+        Mapper.writeValue(response.getWriter(), loginResultSet);
     }
 
     public void register(HttpServletRequest request,
                          HttpServletResponse response)
-            throws ServletException, IOException {
+            throws ServletException, IOException, SQLException {
         // 设置响应内容类型
         String username = request.getParameter("username");
         String password = request.getParameter("password");
         boolean register = UserService.register(username, password);
-        HashMap<String, Object> jsonMap = new HashMap<>(5);
+        ResponseResultSet registerResultSet = null;
         if (register) {
-            jsonMap.put("code", 200);
-            jsonMap.put("msg", "注册成功");
+            registerResultSet = ResponseResultSet.success();
         } else {
-            jsonMap.put("code", 400);
-            jsonMap.put("msg", "用户名重复, 注册失败");
+            registerResultSet = ResponseResultSet.fail();
         }
-        Mapper.writeValue(response.getWriter(), jsonMap);
+        Mapper.writeValue(response.getWriter(), registerResultSet);
     }
 
     public void changePassword(HttpServletRequest request,
-                      HttpServletResponse response)
-            throws IOException {
+                               HttpServletResponse response)
+            throws IOException, SQLException {
         // 设置响应内容类型
         String username = request.getParameter("username");
         String password = request.getParameter("password");
         boolean changePassword = UserService.changePassword(username, password);
-        HashMap<String, Object> jsonMap = new HashMap<>(5);
+        ResponseResultSet changePasswordResultSet = null;
         if (changePassword) {
-            jsonMap.put("code", 200);
-            jsonMap.put("msg", "修改成功");
+            changePasswordResultSet = ResponseResultSet.success();
         } else {
-            jsonMap.put("code", 400);
-            jsonMap.put("msg", "用户不存在, 修改失败");
+            changePasswordResultSet = ResponseResultSet.fail();
         }
-        Mapper.writeValue(response.getWriter(), jsonMap);
+        Mapper.writeValue(response.getWriter(), changePasswordResultSet);
     }
 
     public void deleteUser(HttpServletRequest request,
-                      HttpServletResponse response)
-            throws ServletException, IOException {
+                           HttpServletResponse response)
+            throws ServletException, IOException, SQLException {
         // 设置响应内容类型
         String username = request.getParameter("username");
         String password = request.getParameter("password");
 
         User login = UserService.login(username, password);
-        HashMap<String, Object> jsonMap = new HashMap<>(5);
-
+        ResponseResultSet deleteResultSet = null;
         if (login != null) {
-            boolean delete = UserService.deleteUser(username);
-            jsonMap.put("username", login.getUsername());
-            jsonMap.put("password", login.getPassword());
-            jsonMap.put("code", 200);
-            jsonMap.put("msg", "删除成功");
+            UserService.deleteUser(username);
+            deleteResultSet = ResponseResultSet.success();
         } else {
-            jsonMap.put("code", 400);
-            jsonMap.put("msg", "账号或密码错误, 删除失败");
+            deleteResultSet = ResponseResultSet.fail();
         }
-        Mapper.writeValue(response.getWriter(), jsonMap);
+        Mapper.writeValue(response.getWriter(), deleteResultSet);
 
     }
 }
