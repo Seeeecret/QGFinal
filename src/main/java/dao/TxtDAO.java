@@ -1,13 +1,15 @@
 package dao;
 
-import constants.PrinterStatus;
+import com.alibaba.fastjson.JSON;
 import pojo.po.PrinterTreatedMessage;
 import pojo.po.StatisticTime;
 import utils.CRUDUtil;
 
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
-import java.time.LocalTime;
+import java.time.LocalDate;
+import java.util.HashMap;
 
 /**
  * 持久层，用于从数据库中读取数据和写入处理后的数据到数据库中
@@ -16,16 +18,9 @@ import java.time.LocalTime;
  * @date 2023/04/22
  */
 public class TxtDAO {
-    public static void insertTxtData(PrinterTreatedMessage printerTreatedMessage, String original, int printerID) throws SQLException {
-
-//        if (printerTreatedMessage.printerStatus == PrinterStatus.WORKBENCH_TEMPERATURE) {
-//            CRUDUtil.executeSpecialInsert("printer_message", "", "("
-//                    + printerID + "," + printerTreatedMessage.getTimestamp().getTime() + "," + printerTreatedMessage.firstParam + ",'" + original + "')");
-        if (printerTreatedMessage.printerStatus == PrinterStatus.WORKBENCH_TEMPERATURE) {
-            CRUDUtil.executeCommonInsert("insert into printer_message values (?,?,?,?)", printerID, printerTreatedMessage.getTimestamp(), printerTreatedMessage.firstParam, original);
-        } else {
-            CRUDUtil.executeCommonInsert("insert into printer_message (printer_id,message_time,message) values (?,?,?)", printerID, printerTreatedMessage.getTimestamp(), original);
-        }
+    public static void insertTxtData(PrinterTreatedMessage printerTreatedMessage, HashMap<String, Object> paramsHashMap, int printerID) throws SQLException {
+        CRUDUtil.executeCommonInsert("insert into printer_message values (?,?,?,?)", printerID, printerTreatedMessage.getTimestamp()
+                , printerTreatedMessage.getPrinterStatus().getStatusValue(), JSON.toJSONString(paramsHashMap));
     }
 
     /**
@@ -37,13 +32,26 @@ public class TxtDAO {
      * @throws SQLException sqlexception异常
      */
     public static void insertStatisticData(StatisticTime statisticTime, Timestamp txtDataTimestamp, int printerID) throws SQLException {
-        LocalTime onTime = statisticTime.getOnTime();
-        LocalTime printTime = statisticTime.getPrintTime();
-        LocalTime idleTime = statisticTime.getIdleTime();
-        LocalTime exceptionTime = statisticTime.getExceptionTime();
+        CRUDUtil.ResultSetWrapper statisticTimeResultSetWrapper = CRUDUtil.executeSpecialQuery("statistic_time", "printer_statistic", "where printer_id = " + printerID);
+        ResultSet statisticTimeSet = statisticTimeResultSetWrapper.getResultSet();
+        while (statisticTimeSet.next()) {
+            LocalDate statisticDataDate = statisticTimeSet.getTimestamp("statistic_time").toLocalDateTime().toLocalDate();
+            if (statisticDataDate.isEqual(txtDataTimestamp.toLocalDateTime().toLocalDate())) {
+                updateStatisticData(statisticTime, txtDataTimestamp, printerID);
+                return;
+            }
+        }
         CRUDUtil.executeCommonInsert("insert into printer_statistic values (?,?,?,?,?,?)"
-                , printerID
-                , txtDataTimestamp, onTime, printTime, idleTime, exceptionTime);
+                , printerID, txtDataTimestamp
+                , statisticTime.getOnTime(), statisticTime.getPrintTime()
+                , statisticTime.getIdleTime(), statisticTime.getExceptionTime());
+        return;
+    }
 
+    public static void updateStatisticData(StatisticTime statisticTime, Timestamp txtDataTimestamp, int printerID) throws SQLException {
+        CRUDUtil.executeCommonUpdate("update printer_statistic set statistic_time = ? , daily_on_time = ? , daily_print_time = ? " + ", daily_idle_time = ? , daily_exception_time = ? where printer_id = ?"
+                , txtDataTimestamp, statisticTime.getOnTime(), statisticTime.getPrintTime()
+                , statisticTime.getIdleTime(), statisticTime.getExceptionTime(), printerID);
+return;
     }
 }
