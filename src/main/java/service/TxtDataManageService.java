@@ -5,8 +5,10 @@ import dao.TxtDAO;
 import pojo.bo.PrinterRawMessage;
 import pojo.bo.PrinterStatistic;
 import pojo.po.PrinterTreatedMessage;
+import pojo.po.StatisticTime;
 
 import java.sql.SQLException;
+import java.sql.Timestamp;
 
 /**
  * 专门处理txt数据的服务类,供controller层调用
@@ -92,7 +94,11 @@ public class TxtDataManageService {
     }
 
     public static void insertStatisticData(PrinterStatistic printerStatistic, PrinterRawMessage printerRawMessage, int printerID) throws SQLException {
-        TxtDAO.insertStatisticData(printerStatistic,printerRawMessage.getTimestamp(),printerID);
+        StatisticTime statisticTime = new StatisticTime(printerStatistic.getOnTime()
+                ,printerStatistic.getPrintTime(),printerStatistic.getIdleTime()
+                ,printerStatistic.getExceptionTime());
+        Timestamp txtDataTimestamp = new Timestamp(printerRawMessage.getTimestamp()*1000);
+        TxtDAO.insertStatisticData(statisticTime,txtDataTimestamp,printerID);
     }
 
 }

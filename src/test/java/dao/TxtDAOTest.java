@@ -1,13 +1,24 @@
 package dao;
 
+import org.junit.Test;
+
 public class TxtDAOTest {
 
-//    @Test
-//    public void insertTxtData() throws SQLException {
-//        String original = "1682169303:41:213";
-//        PrinterTreatedMessage printerTreatedMessage = TxtDataManageService.toPrinterTreatedMessage(original);
-//        TxtDAO.insertTxtData(printerTreatedMessage, original, 1);
-//    }
+
+    @Test
+    public void testMethod() {
+//        try {
+//            CRUDUtil.executeCommonInsert("insert into printer_message values (?,?,?,?)", 1, LocalTime.ofSecondOfDay(1), 1, 1);
+//        } catch (SQLException e) {
+//            if(e.getErrorCode() == 1062){
+//                System.out.println("重复");
+//            }
+//            else{
+//                System.out.println("重复");
+//                e.printStackTrace();
+//            }
+//        }
+    }
 //
 //    @Test
 //    public void insertStatisticData() throws SQLException {

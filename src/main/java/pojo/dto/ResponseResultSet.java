@@ -5,6 +5,7 @@ import constants.ResultCodeEnum;
 import java.util.HashMap;
 
 /**
+ * 响应结果集
  * JSON响应的统一结果集类，通过ResultCodeEnum类构造JSON返回给前端
  *
  * @author Secret
@@ -20,7 +21,7 @@ public class ResponseResultSet {
     }
 
     /**
-     *通用返回成功的方法
+     *通用的返回成功结果集的方法
      *
      * @return {@link ResponseResultSet}
      */
@@ -33,15 +34,28 @@ public class ResponseResultSet {
     }
 
     /**
-     * 通用返回失败的方法
+     * 通用的返回服务器错误结果集的方法
+     *
+     * @return {@link ResponseResultSet}
+     */
+    public static ResponseResultSet error() {
+        ResponseResultSet r = new ResponseResultSet();
+        r.setCode(ResultCodeEnum.SERVER_ERROR.getCode());
+        r.setMessage(ResultCodeEnum.SERVER_ERROR.getMessage());
+        r.setSuccess(ResultCodeEnum.SERVER_ERROR.isSuccess());
+        return r;
+    }
+
+    /**
+     * 通用的返回请求参数错误结果集的方法
      *
      * @return {@link ResponseResultSet}
      */
     public static ResponseResultSet fail() {
         ResponseResultSet r = new ResponseResultSet();
-        r.setCode(ResultCodeEnum.SERVER_ERROR.getCode());
-        r.setMessage(ResultCodeEnum.SERVER_ERROR.getMessage());
-        r.setSuccess(ResultCodeEnum.SERVER_ERROR.isSuccess());
+        r.setCode(ResultCodeEnum.BAD_REQUEST.getCode());
+        r.setMessage(ResultCodeEnum.BAD_REQUEST.getMessage());
+        r.setSuccess(ResultCodeEnum.BAD_REQUEST.isSuccess());
         return r;
     }
 
