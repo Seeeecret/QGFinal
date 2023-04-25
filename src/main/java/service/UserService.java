@@ -12,27 +12,34 @@ import java.sql.SQLException;
  */
 public class UserService {
 
-    public  static User query(String username) {
+    public static User query(String username) throws SQLException {
         User user = null;
         // try-with-resources语句会自动关闭资源!!记得改
-        try (Connection connection = CRUDUtil.getConnection()) {
+        Connection connection = null;
+        try {
+            connection = CRUDUtil.getConnection();
             user = UserDAO.query(connection, username);
-            CRUDUtil.close(connection);
         } catch (Exception e) {
             e.printStackTrace();
+        } finally {
+            CRUDUtil.close(connection);
         }
         return user;
     }
-    public static User login(String username, String password) {
+
+    public static User login(String username, String password) throws SQLException {
         User user = null;
-        try (Connection connection = CRUDUtil.getConnection()) {
+        Connection connection = null;
+        try {
+            connection = CRUDUtil.getConnection();
             user = UserDAO.query(connection, username);
             if (user != null && user.getPassword().equals(password)) {
                 return user;
             }
-            CRUDUtil.close(connection);
         } catch (Exception e) {
             e.printStackTrace();
+        } finally {
+            CRUDUtil.close(connection);
         }
         return null;
     }
@@ -44,25 +51,30 @@ public class UserService {
      * @param password 密码
      * @return boolean
      */
-    public static boolean register(String username, String password) {
+    public static boolean register(String username, String password) throws SQLException {
         User user = null;
-        try (Connection connection = CRUDUtil.getConnection()) {
+        Connection connection = null;
+        try {
+            connection = CRUDUtil.getConnection();
             user = UserDAO.query(connection, username);
             if (user == null) {
                 user = new User(username, password);
                 UserDAO.insert(connection, user);
                 return true;
             }
-            CRUDUtil.close(connection);
         } catch (SQLException e) {
             throw new RuntimeException(e);
+        } finally {
+            CRUDUtil.close(connection);
         }
         return false;
     }
 
-    public static boolean changePassword(String username, String password) {
+    public static boolean changePassword(String username, String password) throws SQLException {
         User user = null;
-        try (Connection connection = CRUDUtil.getConnection()) {
+        Connection connection = null;
+        try {
+            connection = CRUDUtil.getConnection();
             user = UserDAO.query(connection, username);
             if (user != null) {
                 user.setPassword(password);
@@ -72,23 +84,26 @@ public class UserService {
             CRUDUtil.close(connection);
         } catch (SQLException e) {
             throw new RuntimeException(e);
+        } finally {
+            CRUDUtil.close(connection);
         }
         return false;
     }
 
-    public static boolean deleteUser(String username) {
+    public static void deleteUser(String username) throws SQLException {
         User user = null;
-        try (Connection connection = CRUDUtil.getConnection()) {
+        Connection connection = null;
+        try {
+            connection = CRUDUtil.getConnection();
             user = UserDAO.query(connection, username);
             if (user != null) {
                 UserDAO.delete(connection, username);
-                return true;
             }
-            CRUDUtil.close(connection);
         } catch (SQLException e) {
             throw new RuntimeException(e);
+        } finally {
+            CRUDUtil.close(connection);
         }
-        return false;
     }
 
     public UserService() {

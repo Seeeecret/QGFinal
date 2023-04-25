@@ -65,7 +65,13 @@ public class PrinterStatistic {
 
     public void analyzeTxtData(PrinterStatus printerStatus){
         switch (printerStatus) {
+            case WORKBENCH_TEMPERATURE:
+            case WORK_BEGIN_PRINTING:
+            case WORK_TIME_REMAINING:
             case WORK_NAME_STRING:
+                if(exceptionTimeFlag){
+
+                }
                 break;
             case WORK_NOT_STARTED:
                 if (!onTimeFlag) {
