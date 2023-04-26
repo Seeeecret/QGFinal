@@ -1,8 +1,10 @@
 package service;
 
+import constants.Role;
 import dao.UserDAO;
 import pojo.po.User;
 import utils.CRUDUtil;
+import utils.JwtUtil;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -27,14 +29,14 @@ public class UserService {
         return user;
     }
 
-    public static User login(String username, String password) throws SQLException {
+    public static String login(String username, String password) throws SQLException {
         User user = null;
         Connection connection = null;
         try {
             connection = CRUDUtil.getConnection();
             user = UserDAO.query(connection, username);
             if (user != null && user.getPassword().equals(password)) {
-                return user;
+                 return JwtUtil.generateToken(String.valueOf(user.getUserId()), user.getUsername(), user.getRole().getRoleId());
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -51,14 +53,14 @@ public class UserService {
      * @param password 密码
      * @return boolean
      */
-    public static boolean register(String username, String password) throws SQLException {
+    public static boolean register(String username, String password, Role userRole,Integer parentId,String info) throws SQLException {
         User user = null;
         Connection connection = null;
         try {
             connection = CRUDUtil.getConnection();
             user = UserDAO.query(connection, username);
             if (user == null) {
-                user = new User(username, password);
+                user = new User(username, password,userRole,parentId,info);
                 UserDAO.insert(connection, user);
                 return true;
             }
