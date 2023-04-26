@@ -73,7 +73,7 @@
             let password = $("#password").val();
             let remember = $("#rememberBtn").prop("checked");
             $.ajax({
-                type: "GET",
+                type: "POST",
                 url: 'http://localhost:8080/QGFinal_war/user',
                 data: {
                     username: username,
@@ -82,7 +82,7 @@
                     remember: remember
                 },
                 dataType: "json",
-                success: function (response) {
+                success: function (response,xhr) {
                     if (response.code === 200) {
                         localStorage.setItem("username", username);
                         alert("Successfully login");

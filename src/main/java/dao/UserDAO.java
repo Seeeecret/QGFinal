@@ -1,10 +1,10 @@
 package dao;
 
+import constants.Role;
 import pojo.po.User;
 import utils.CRUDUtil;
 
 import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
@@ -17,8 +17,10 @@ public class UserDAO {
             ResultSet resultSet = queryResultSetWrapper.getResultSet();
             if (resultSet.next()) {
                 user = new User();
+                user.setUserId(resultSet.getInt("id"));
                 user.setUsername(resultSet.getString("username"));
                 user.setPassword(resultSet.getString("password"));
+                user.setRole(Role.fromRoleId(resultSet.getInt("role_id")));
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -33,7 +35,7 @@ public class UserDAO {
 
     public static void insert(Connection connection, User user) {
         try {
-            CRUDUtil.executeSpecialInsert("user", "username,password", "(" + user.getUsername() + "," + user.getPassword() + ")");
+            CRUDUtil.executeCommonInsert("insert into user (username, password, role_id, parent_id, info) VALUES (?,?,?,?,?)", user.getUsername(), user.getPassword(), user.getRole().getRoleId(), user.getParentId(), user.getJsonInfo());
 //            PreparedStatement statement = connection.prepareStatement("INSERT INTO user_merit (username, password) VALUES (?, ?)");
 //            statement.setString(1, user.getUsername());
 //            statement.setString(2, user.getPassword());
@@ -73,15 +75,15 @@ public class UserDAO {
     }
 
 
-    public static int addMerit(String username) throws SQLException {
-        Connection connection = CRUDUtil.getConnection();
-        PreparedStatement preparedStatement = connection.prepareStatement("UPDATE user_merit SET merit = merit + 1 WHERE username = ?");
-        preparedStatement.setString(1, username);
-        int i = preparedStatement.executeUpdate();
-        CRUDUtil.close(preparedStatement);
-        CRUDUtil.close(connection);
-        return i;
-    }
+//    public static int addMerit(String username) throws SQLException {
+//        Connection connection = CRUDUtil.getConnection();
+//        PreparedStatement preparedStatement = connection.prepareStatement("UPDATE user_merit SET merit = merit + 1 WHERE username = ?");
+//        preparedStatement.setString(1, username);
+//        int i = preparedStatement.executeUpdate();
+//        CRUDUtil.close(preparedStatement);
+//        CRUDUtil.close(connection);
+//        return i;
+//    }
 
     public UserDAO() {
     }

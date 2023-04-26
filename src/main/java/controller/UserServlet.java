@@ -1,8 +1,7 @@
 package controller;
 
-import dao.UserDAO;
+import com.alibaba.fastjson.JSONObject;
 import pojo.dto.ResponseResultSet;
-import pojo.po.User;
 import service.UserService;
 import utils.Mapper;
 
@@ -13,7 +12,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.HashMap;
 
 import static constants.RoleConstants.TRUE;
 
@@ -22,58 +20,17 @@ import static constants.RoleConstants.TRUE;
  */
 @WebServlet("/user")
 public class UserServlet extends BaseServlet {
-    public void addMerit(HttpServletRequest request,
-                         HttpServletResponse response)
-            throws IOException, SQLException {
-        // 设置响应内容类型
-        HashMap<String, Object> jsonMap = new HashMap<>(5);
-        String username = request.getParameter("username");
-        int i = 0;
-        try {
-            i = UserDAO.addMerit(username);
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        } finally {
-            int merit = UserService.query(username).getMerit();
-            if (i == 0) {
-                jsonMap.put("data", i);
-                jsonMap.put("code", 400);
-                jsonMap.put("msg", "功德增加失败");
-            } else {
-                jsonMap.put("code", 200);
-                jsonMap.put("data", merit);
-                jsonMap.put("msg", "功德增加成功");
-            }
-        }
-        Mapper.writeValue(response.getWriter(), jsonMap);
-
-    }
-
-    public void queryMerit(HttpServletRequest request,
-                           HttpServletResponse response)
-            throws IOException, SQLException {
-        // 设置响应内容类型
-        HashMap<String, Object> jsonMap = new HashMap<>(5);
-        String username = request.getParameter("username");
-        int i = 0;
-        i = UserService.query(username).getMerit();
-        jsonMap.put("code", 200);
-        jsonMap.put("msg", "功德查询成功");
-        jsonMap.put("data", i);
-        Mapper.writeValue(response.getWriter(), jsonMap);
-    }
 
     public void login(HttpServletRequest request,
-                      HttpServletResponse response)
+                      HttpServletResponse response, JSONObject jsonObject)
             throws IOException, SQLException {
-        // 设置响应内容类型
-        String username = request.getParameter("username");
-        String password = request.getParameter("password");
-        String remember = request.getParameter("remember");
-        User login = UserService.login(username, password);
+        String username = jsonObject.getString("username");
+        String password = jsonObject.getString("password");
+        String remember = jsonObject.getString("remember");
+        String token = UserService.login(username, password);
 
         ResponseResultSet loginResultSet = null;
-        if (login != null) {
+        if (token != null) {
             if (TRUE.equals(remember)) {
                 Cookie usernameCookie = new Cookie("username", username);
                 Cookie passwordCookie = new Cookie("password", password);
@@ -82,8 +39,8 @@ public class UserServlet extends BaseServlet {
                 response.addCookie(usernameCookie);
                 response.addCookie(passwordCookie);
             }
-            loginResultSet = ResponseResultSet.success().data("user", login);
-//            jsonMap.put("data", login);
+            loginResultSet = ResponseResultSet.success();
+            response.setHeader("Authorization", "Bearer "+ token);
         } else {
             loginResultSet = ResponseResultSet.fail();
         }
@@ -93,7 +50,6 @@ public class UserServlet extends BaseServlet {
     public void register(HttpServletRequest request,
                          HttpServletResponse response)
             throws ServletException, IOException, SQLException {
-        // 设置响应内容类型
         String username = request.getParameter("username");
         String password = request.getParameter("password");
         boolean register = UserService.register(username, password);
@@ -109,7 +65,6 @@ public class UserServlet extends BaseServlet {
     public void changePassword(HttpServletRequest request,
                                HttpServletResponse response)
             throws IOException, SQLException {
-        // 设置响应内容类型
         String username = request.getParameter("username");
         String password = request.getParameter("password");
         boolean changePassword = UserService.changePassword(username, password);
@@ -125,13 +80,12 @@ public class UserServlet extends BaseServlet {
     public void deleteUser(HttpServletRequest request,
                            HttpServletResponse response)
             throws ServletException, IOException, SQLException {
-        // 设置响应内容类型
         String username = request.getParameter("username");
         String password = request.getParameter("password");
 
-        User login = UserService.login(username, password);
+        String token = UserService.login(username, password);
         ResponseResultSet deleteResultSet = null;
-        if (login != null) {
+        if (token != null) {
             UserService.deleteUser(username);
             deleteResultSet = ResponseResultSet.success();
         } else {
