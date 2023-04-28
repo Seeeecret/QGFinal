@@ -1,6 +1,7 @@
 package controller;
 
 import com.alibaba.fastjson.JSONObject;
+import constants.Role;
 import pojo.dto.ResponseResultSet;
 import service.UserService;
 import utils.Mapper;
@@ -52,7 +53,8 @@ public class UserServlet extends BaseServlet {
             throws ServletException, IOException, SQLException {
         String username = request.getParameter("username");
         String password = request.getParameter("password");
-        boolean register = UserService.register(username, password);
+        int roleId = Integer.parseInt(request.getParameter("roleId"));
+        boolean register = UserService.register(username, password, Role.fromRoleId(roleId),null,null);
         ResponseResultSet registerResultSet = null;
         if (register) {
             registerResultSet = ResponseResultSet.success();

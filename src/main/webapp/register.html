@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>register</title>
+    <link rel="stylesheet" href="login.css">
+    <script src="https://lf3-cdn-tos.bytecdntp.com/cdn/expire-1-M/jquery/3.6.0/jquery.min.js"
+            type="application/javascript"></script>
+</head>
+<body>
+<div class="login-container">
+    <h1>注册系统</h1>
+    <form>
+        <div class="form-group">
+            <label for="username">用户名:</label>
+            <input type="text" id="username" name="username" placeholder="请输入1~16位非中文ID" maxlength="16" required>
+            <span class="error-message" id="username-error"></span>
+        </div>
+        <div class="form-group">
+            <label for="password">密码:</label>
+            <input type="password" id="password" name="password" placeholder="请输入8~20位非中文密码" maxlength="20" required>
+            <span class="error-message" id="password-error"></span>
+        </div>
+        <div class="form-group">
+            <label for="role">账号类型:</label>
+            <select id="role">
+                <option value=2>企业用户</option>
+                <option value=3>普通用户</option>
+            </select>
+        </div>
+        <div id="registerRoleClass">
+            <button type="submit" id="registerBtn" disabled>注册</button>
+        </div>
+    </form>
+    <div class="error-message"></div>
+</div>
+<script>
+    const $usernameInput = $('#username');
+    const $passwordInput = $('#password');
+    const $usernameError = $('#username-error');
+    const $passwordError = $('#password-error');
+    const $submitBtn = $('#submit-btn');
+
+    // 绑定事件处理函数
+    $usernameInput.on('input', validateUsername);
+    $passwordInput.on('input', validatePassword);
+
+    function validateUsername() {
+        // 获取输入框中的值，并去除两端的空白字符
+        const username = $usernameInput.val().trim();
+
+        // 正则表达式验证
+        const reg = /^[a-zA-Z0-9]{1,16}$/;
+        if (reg.test(username)) {
+            // $usernameInput.removeClass('error');
+            $usernameError.text('');
+        } else {
+            // $usernameInput.addClass('error');
+            $usernameError.text('用户名格式错误');
+        }
+
+        // 判断是否所有输入框都验证通过，决定提交按钮是否可用
+        if (username && $passwordInput.val()) {
+            $submitBtn.prop('disabled', false);
+        } else {
+            $submitBtn.prop('disabled', true);
+        }
+    }
+
+    function validatePassword() {
+        // 获取输入框中的值，并去除两端的空白字符
+        const password = $passwordInput.val().trim();
+
+        // 正则表达式验证
+        const reg = /^[a-zA-Z0-9]{8,20}$/;
+        if (reg.test(password)) {
+            // $passwordInput.removeClass('error');
+            $passwordError.text('');
+        } else {
+            // $passwordInput.addClass('error');
+            $passwordError.text('密码格式错误');
+        }
+
+        // 判断是否所有输入框都验证通过，决定提交按钮是否可用
+        if ($usernameInput.val() && password) {
+            $submitBtn.prop('disabled', false);
+        } else {
+            $submitBtn.prop('disabled', true);
+        }
+    }</script>
+</body>
+</html>
