@@ -1,6 +1,7 @@
 package controller;
 
 import com.alibaba.fastjson.JSONObject;
+import constants.Role;
 import pojo.dto.ResponseResultSet;
 import service.UserService;
 import utils.Mapper;
@@ -39,10 +40,10 @@ public class UserServlet extends BaseServlet {
                 response.addCookie(usernameCookie);
                 response.addCookie(passwordCookie);
             }
-            loginResultSet = ResponseResultSet.success();
-            response.setHeader("Authorization", "Bearer "+ token);
+            loginResultSet = ResponseResultSet.success(response);
+            response.addHeader("Authorization", "Bearer "+ token);
         } else {
-            loginResultSet = ResponseResultSet.fail();
+            loginResultSet = ResponseResultSet.fail(response);
         }
         Mapper.writeValue(response.getWriter(), loginResultSet);
     }
@@ -52,12 +53,13 @@ public class UserServlet extends BaseServlet {
             throws ServletException, IOException, SQLException {
         String username = request.getParameter("username");
         String password = request.getParameter("password");
-        boolean register = UserService.register(username, password);
+        int roleId = Integer.parseInt(request.getParameter("roleId"));
+        boolean register = UserService.register(username, password, Role.fromRoleId(roleId),null,null);
         ResponseResultSet registerResultSet = null;
         if (register) {
-            registerResultSet = ResponseResultSet.success();
+            registerResultSet = ResponseResultSet.success(response);
         } else {
-            registerResultSet = ResponseResultSet.fail();
+            registerResultSet = ResponseResultSet.fail(response);
         }
         Mapper.writeValue(response.getWriter(), registerResultSet);
     }
@@ -70,9 +72,9 @@ public class UserServlet extends BaseServlet {
         boolean changePassword = UserService.changePassword(username, password);
         ResponseResultSet changePasswordResultSet = null;
         if (changePassword) {
-            changePasswordResultSet = ResponseResultSet.success();
+            changePasswordResultSet = ResponseResultSet.success(response);
         } else {
-            changePasswordResultSet = ResponseResultSet.fail();
+            changePasswordResultSet = ResponseResultSet.fail(response);
         }
         Mapper.writeValue(response.getWriter(), changePasswordResultSet);
     }
@@ -87,9 +89,9 @@ public class UserServlet extends BaseServlet {
         ResponseResultSet deleteResultSet = null;
         if (token != null) {
             UserService.deleteUser(username);
-            deleteResultSet = ResponseResultSet.success();
+            deleteResultSet = ResponseResultSet.success(response);
         } else {
-            deleteResultSet = ResponseResultSet.fail();
+            deleteResultSet = ResponseResultSet.fail(response);
         }
         Mapper.writeValue(response.getWriter(), deleteResultSet);
 

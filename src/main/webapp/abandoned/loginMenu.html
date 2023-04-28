@@ -3,11 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <title>loginMenu</title>
-    <script src="webjars/Util/Function.js"></script>
-    <script src="webjars/jquery/3.6.4/jquery.js"></script>
+    <script src="/webjars/Util/Function.js"></script>
+    <script src="/webjars/jquery/3.6.4/jquery.js"></script>
     <link rel="stylesheet" href="loginMenuCSS.css">
 
-    <link rel="stylesheet" href="/css/styles.css?timestamp=<%=System.currentTimeMillis()%>">
     <script src="/js/scripts.js?timestamp=<%=System.currentTimeMillis()%>"></script>
 
 </head>
@@ -83,8 +82,11 @@
                 },
                 dataType: "json",
                 success: function (response,xhr) {
-                    if (response.code === 200) {
+                    let jsonData = JSON.parse(response.data);
+                    var token = xhr.getResponseHeader("Authorization")
+                    if (jsonData.success === true) {
                         localStorage.setItem("username", username);
+                        localStorage.setItem("token",token);
                         alert("Successfully login");
                         window.location.href = "http://localhost:8080/QGFinal_war/meritMenu.html?username=" + localStorage.getItem("username");
 

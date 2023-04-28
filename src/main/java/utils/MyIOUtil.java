@@ -35,6 +35,10 @@ public class MyIOUtil {
         outputStream.close();
         return result;
     }
-
+    public static String URLtoJson(String paramIn) {
+        paramIn = paramIn.replaceAll("=","\":\"");
+        paramIn = paramIn.replaceAll("&","\",\"");
+        return"{\"" + paramIn +"\"}";
+    }
 
 }

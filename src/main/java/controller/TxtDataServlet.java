@@ -59,7 +59,7 @@ public class TxtDataServlet extends BaseServlet {
         printerStatistic.analyzeTxtData(txtData);
         TxtDataManageService.insertTxtData(printerRawMessage, printerID);
         TxtDataManageService.insertStatisticData(printerStatistic, printerRawMessage, printerID);
-        Mapper.writeValue(response.getWriter(), ResponseResultSet.success());
+        Mapper.writeValue(response.getWriter(), ResponseResultSet.success(response));
 
     }
 
@@ -79,6 +79,6 @@ public class TxtDataServlet extends BaseServlet {
 //        HashMap<String, Object> jsonMap = new HashMap<>(5);
 //        jsonMap.put("code", 200);
 //        jsonMap.put("msg", "请求响应成功");
-        Mapper.writeValue(response.getWriter(), ResponseResultSet.success());
+        Mapper.writeValue(response.getWriter(), ResponseResultSet.success(response));
     }
 }

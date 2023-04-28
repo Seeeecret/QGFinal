@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>register</title>
+    <link rel="stylesheet" href="login.css">
+    <script src="https://lf3-cdn-tos.bytecdntp.com/cdn/expire-1-M/jquery/3.6.0/jquery.min.js"
+            type="application/javascript"></script>
+    <script src="register.js" type="application/javascript"></script>
+</head>
+<body>
+<div class="login-container">
+    <h1>注册系统</h1>
+    <form>
+        <div class="form-group">
+            <label for="username">用户名:</label>
+            <input type="text" id="username" name="username" placeholder="请输入1~16位非中文ID" maxlength="16" required>
+            <span class="error-message" id="username-error"></span>
+        </div>
+        <div class="form-group">
+            <label for="password">密码:</label>
+            <input type="password" id="password" name="password" placeholder="请输入8~20位非中文密码" maxlength="20" required>
+            <span class="error-message" id="password-error"></span>
+        </div>
+        <div class="form-group">
+            <label for="role">账号类型:</label>
+            <select id="role">
+                <option value=2>企业用户</option>
+                <option value=3>普通用户</option>
+            </select>
+        </div>
+        <div id="registerRoleClass">
+            <button type="button" id="registerBtn" disabled>注册</button>
+            <button type="button" id="backToLoginBtn">回去登录</button>
+        </div>
+
+    </form>
+    <div class="error-message"></div>
+</div>
+
+</body>
+</html>
