@@ -36,9 +36,9 @@ public class UserService {
             connection = CRUDUtil.getConnection();
             user = UserDAO.query(connection, username);
             if (user != null && user.getPassword().equals(password)) {
-                 return JwtUtil.generateToken(String.valueOf(user.getUserId()), user.getUsername(), user.getRole().getRoleId());
+                 return JwtUtil.generateToken(Integer.toString(user.getUserId()), user.getUsername(), user.getRole().getRoleId());
             }
-        } catch (Exception e) {
+        } catch (SQLException e) {
             e.printStackTrace();
         } finally {
             CRUDUtil.close(connection);

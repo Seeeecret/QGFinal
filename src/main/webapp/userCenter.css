@@ -1,0 +1,89 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f8f8f8;
+}
+nav {
+    background-color: #333;
+    color: #fff;
+    height: 50px;
+    padding: 0 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+nav a {
+    color: #fff;
+    text-decoration: none;
+    margin-left:8px;
+    margin-right:8px;
+    font-size: 18px;
+    font-weight: bold;
+}
+nav #hallBtn:hover {
+    text-decoration: underline;
+}
+nav #logoutBtn:hover {
+    text-decoration: underline;
+}
+/* 表单样式 */
+form {
+    max-width: 600px;
+    margin: 50px auto;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+label {
+    display: block;
+    margin-bottom: 10px;
+    font-weight: bold;
+}
+label span {
+    font-weight: normal;
+    color: gray;
+    margin-left: 10px;
+}
+.sex-class {
+    display: inline-flex;
+    margin-bottom: 12px;
+}
+#sex{
+    margin-left: 8px;
+    margin-bottom: 10px;
+
+}
+input[type="text"] {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin-bottom: 20px;
+    box-sizing: border-box;
+}
+input[type="text"][readonly] {
+    background-color: #f0f0f0;
+}
+button {
+    display: block;
+    margin: 20px auto;
+    padding: 10px;
+    background-color: #333;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+button:hover {
+    background-color: #555;
+}
+footer {
+    position: absolute;
+    text-align: center;
+    width: 100%;
+    margin-top: 50px;
+    bottom: 0;
+    padding: 20px;
+    background-color: #333;
+    color: #fff;
+}

@@ -2,6 +2,7 @@ package pojo.dto;
 
 import constants.ResultCodeEnum;
 
+import javax.servlet.http.HttpServletResponse;
 import java.util.HashMap;
 
 /**
@@ -25,7 +26,8 @@ public class ResponseResultSet {
      *
      * @return {@link ResponseResultSet}
      */
-    public static ResponseResultSet success() {
+    public static ResponseResultSet success(HttpServletResponse response) {
+        response.setStatus(200);
         ResponseResultSet r = new ResponseResultSet();
         r.setCode(ResultCodeEnum.OK.getCode());
         r.setMessage(ResultCodeEnum.OK.getMessage());
@@ -38,7 +40,8 @@ public class ResponseResultSet {
      *
      * @return {@link ResponseResultSet}
      */
-    public static ResponseResultSet error() {
+    public static ResponseResultSet error(HttpServletResponse response) {
+        response.setStatus(500);
         ResponseResultSet r = new ResponseResultSet();
         r.setCode(ResultCodeEnum.SERVER_ERROR.getCode());
         r.setMessage(ResultCodeEnum.SERVER_ERROR.getMessage());
@@ -51,7 +54,8 @@ public class ResponseResultSet {
      *
      * @return {@link ResponseResultSet}
      */
-    public static ResponseResultSet fail() {
+    public static ResponseResultSet fail(HttpServletResponse response) {
+        response.setStatus(400);
         ResponseResultSet r = new ResponseResultSet();
         r.setCode(ResultCodeEnum.BAD_REQUEST.getCode());
         r.setMessage(ResultCodeEnum.BAD_REQUEST.getMessage());

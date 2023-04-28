@@ -10,7 +10,12 @@ import java.util.Properties;
  * @author Secret
  */
 public class CRUDUtil {
-    // ResultSetWrapper类，用于包装ResultSet对象
+    /**
+     * ResultSetWrapper类，用于包装ResultSet对象
+     *
+     * @author Secret
+     * @date 2023/04/29
+     */
     public static class ResultSetWrapper{
         private ResultSet resultSet;
         private PreparedStatement preparedStatement;

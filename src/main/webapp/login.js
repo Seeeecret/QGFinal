@@ -10,35 +10,42 @@ $(document).ready(function () {
         let username = $("#username").val();
         let password = $("#password").val();
         let remember = $("#rememberBtn").prop("checked");
-        $.ajax({
-            type: "POST",
-            url: 'http://localhost:8080/QGFinal_war/user',
-            data: {
-                username: username,
-                password: password,
-                method: "login",
-                remember: remember
-            },
-            dataType: "json",
-            success: function (response, xhr) {
-                let jsonData = JSON.parse(response.data);
-                var token = xhr.getResponseHeader("Authorization")
-                if (jsonData.success === true) {
-                    localStorage.setItem("username", username);
-                    localStorage.setItem("token", token);
-                    alert("Successfully login");
-                    window.location.href = "http://localhost:8080/QGFinal_war/meritMenu.html?username=" + localStorage.getItem("username");
+        if(username && password) {
+            $("#usernameOrPassword-error").text("");
+            $.ajax({
+                type: "POST",
+                contentType: "application/json",
+                url: 'http://localhost:8080/QGFinal_war/user',
+                data: {
+                    username: username,
+                    password: password,
+                    method: "login",
+                    remember: remember
+                },
+                dataType: "json",
+                success: function (data, status, jqXHR) {
+                    let jsonData = data;
+                    if (jsonData.success === true) {
+                        var token = jqXHR.getResponseHeader("Authorization")
+                        localStorage.setItem("username", username);
+                        localStorage.setItem("token", token);
+                        alert("Successfully login");
+                        window.location.href = "http://localhost:8080/QGFinal_war/hall.html?username=" + localStorage.getItem("username");
 
-                } else {
+                    } else {
 
-                    alert("Username or password is incorrect");
+                        alert("Username or password is incorrect");
 
+                    }
+                },
+                error: function () {
+                    alert("System error");
                 }
-            },
-            error: function () {
-                alert("System error");
-            }
-        });
+            });
+        } else {
+            $("#usernameOrPassword-error").text("用户名或密码不能为空");
+            // alert("Username or password can not be empty");
+        }
     });
     $("#register-link").click(function () {
         window.location.href = "register.html";
