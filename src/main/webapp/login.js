@@ -1,31 +1,61 @@
-// <script src="webjars/jquery/3.6.4/jquery.js"></script>
+// 用于登录页面的JavaScript代码
+$(document).ready(function () {
+    // let usernameCookie = $.cookie("username");
+    // let passwordCookie = $.cookie("password");
+    let usernameCookie = getCookie("username");
+    let passwordCookie = getCookie("password");
+    $("#username").attr("value", usernameCookie);
+    $("#password").attr("value", passwordCookie);
+    $("#loginBtn").click(function () {
+        let username = $("#username").val();
+        let password = $("#password").val();
+        let remember = $("#rememberBtn").prop("checked");
+        $.ajax({
+            type: "POST",
+            url: 'http://localhost:8080/QGFinal_war/user',
+            data: {
+                username: username,
+                password: password,
+                method: "login",
+                remember: remember
+            },
+            dataType: "json",
+            success: function (response, xhr) {
+                let jsonData = JSON.parse(response.data);
+                var token = xhr.getResponseHeader("Authorization")
+                if (jsonData.success === true) {
+                    localStorage.setItem("username", username);
+                    localStorage.setItem("token", token);
+                    alert("Successfully login");
+                    window.location.href = "http://localhost:8080/QGFinal_war/meritMenu.html?username=" + localStorage.getItem("username");
 
-$(document).ready(function() {
-    $('form').submit(function(event) {
-        event.preventDefault();
-        var username = $('#username').val();
-        var password = $('#password').val();
-        if (username === '' || password === '') {
-            $('.error-message').text('Please enter both username and password');
-        } else {
-            // 这里可以使用Ajax发送POST请求到后端进行验证
-            // 如果验证成功则跳转到主页，否则显示错误信息
-            // 以下是伪代码
-            // $.post('/login', {username: username, password: password}, function(response) {
-            //   if (response.success) {
-            //     window.location.href = '/home';
-            //   } else {
-            //     $('.error-message').text(response.message);
-            //   }
-            // });
-            $('.error-message').text('Invalid username or password');
-        }
+                } else {
+
+                    alert("Username or password is incorrect");
+
+                }
+            },
+            error: function () {
+                alert("System error");
+            }
+        });
     });
-    $("#register-link").click(function() {
+    $("#register-link").click(function () {
         window.location.href = "register.html";
     });
 });
-// var registerLink = document.getElementById("register-link");
-// registerLink.addEventListener("click", function() {
-//     window.location.href = "register.html"; // 跳转到注册页面的 URL
-// });
+
+function getCookie(name) {
+    var cookieString = document.cookie;
+    var cookies = cookieString.split('; ');
+    for (var i = 0; i < cookies.length; i++) {
+        var cookie = cookies[i];
+        var separatorIndex = cookie.indexOf('=');
+        var cookieName = cookie.substring(0, separatorIndex);
+        var cookieValue = cookie.substring(separatorIndex + 1);
+        if (cookieName === name) {
+            return cookieValue;
+        }
+    }
+    return null;
+}
