@@ -1,6 +1,6 @@
 package controller;
 
-import org.json.JSONObject;
+import com.alibaba.fastjson.JSONObject;
 import pojo.dto.ResponseResultSet;
 import utils.JwtUtil;
 import utils.Mapper;
@@ -9,19 +9,20 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.sql.SQLException;
 
-@WebServlet("/checkLoginStatus")
-public class checkLoginStatusServlet extends BaseServlet{
+@WebServlet("/checkToken")
+public class checkTokenServlet extends BaseServlet{
 
-    public void checkLoginStatus(HttpServletRequest request,
+    public void checkToken(HttpServletRequest request,
                                  HttpServletResponse response, JSONObject jsonObject)
-            throws IOException, SQLException {
+            throws IOException {
         String token = JwtUtil.getToken(request);
         boolean isLogin = JwtUtil.validateToken(token);
         ResponseResultSet checkLoginStatusResultSet = null;
         if (isLogin) {
+            Integer roleId = JwtUtil.getRoleId(token);
             checkLoginStatusResultSet = ResponseResultSet.success(response);
+            checkLoginStatusResultSet.data("roleId",roleId);
         } else {
             checkLoginStatusResultSet = ResponseResultSet.fail(response);
         }

@@ -41,7 +41,7 @@ public class BaseServlet extends HttpServlet {
                 if (methodName == null || methodName.isEmpty()) {
                     throw new RuntimeException("没有传入method参数");
                 }
-                Method method = actionClass.getMethod(methodName, HttpServletRequest.class, HttpServletResponse.class);
+                Method method = actionClass.getDeclaredMethod(methodName, HttpServletRequest.class, HttpServletResponse.class);
                 method.invoke(this, request, response);
             }// 通过反射调用子类的方法
         } catch (InvocationTargetException | IllegalAccessException | NoSuchMethodException e) {
@@ -60,7 +60,7 @@ public class BaseServlet extends HttpServlet {
         JSONObject jsonObject = JSON.parseObject(MyIOUtil.URLtoJson(jsonString));
         methodName = jsonObject.getString("method");
         try{
-        Method method = actionClass.getMethod(methodName, HttpServletRequest.class, HttpServletResponse.class, JSONObject.class);
+        Method method = actionClass.getDeclaredMethod(methodName, HttpServletRequest.class, HttpServletResponse.class, JSONObject.class);
         method.invoke(this, request, response, jsonObject);
         } catch (InvocationTargetException | IllegalAccessException | NoSuchMethodException e) {
             e.printStackTrace();

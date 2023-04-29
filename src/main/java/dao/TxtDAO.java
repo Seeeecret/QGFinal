@@ -49,7 +49,7 @@ public class TxtDAO {
     }
 
     public static void updateStatisticData(StatisticTime statisticTime, Timestamp txtDataTimestamp, int printerID) throws SQLException {
-        CRUDUtil.executeCommonUpdate("update printer_statistic set statistic_time = ? , daily_on_time = ? , daily_print_time = ? " + ", daily_idle_time = ? , daily_exception_time = ? where printer_id = ?"
+        CRUDUtil.executeCommonUpdate("updateInfoOnly printer_statistic set statistic_time = ? , daily_on_time = ? , daily_print_time = ? " + ", daily_idle_time = ? , daily_exception_time = ? where printer_id = ?"
                 , txtDataTimestamp, statisticTime.getOnTime(), statisticTime.getPrintTime()
                 , statisticTime.getIdleTime(), statisticTime.getExceptionTime(), printerID);
 return;

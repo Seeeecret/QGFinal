@@ -35,6 +35,15 @@ public class ResponseResultSet {
         return r;
     }
 
+    public static ResponseResultSet partialContent(HttpServletResponse response) {
+        response.setStatus(206);
+        ResponseResultSet r = new ResponseResultSet();
+        r.setCode(ResultCodeEnum.PARTIAL_CONTENT.getCode());
+        r.setMessage(ResultCodeEnum.PARTIAL_CONTENT.getMessage());
+        r.setSuccess(ResultCodeEnum.PARTIAL_CONTENT.isSuccess());
+        return r;
+    }
+
     /**
      * 通用的返回服务器错误结果集的方法
      *
@@ -63,6 +72,32 @@ public class ResponseResultSet {
         return r;
     }
 
+    public static ResponseResultSet unauthorized(HttpServletResponse response) {
+        response.setStatus(401);
+        ResponseResultSet r = new ResponseResultSet();
+        r.setCode(ResultCodeEnum.UNAUTHORIZED.getCode());
+        r.setMessage(ResultCodeEnum.UNAUTHORIZED.getMessage());
+        r.setSuccess(ResultCodeEnum.UNAUTHORIZED.isSuccess());
+        return r;
+    }
+
+    public static ResponseResultSet forbidden(HttpServletResponse response) {
+        response.setStatus(403);
+        ResponseResultSet r = new ResponseResultSet();
+        r.setCode(ResultCodeEnum.FORBIDDEN.getCode());
+        r.setMessage(ResultCodeEnum.FORBIDDEN.getMessage());
+        r.setSuccess(ResultCodeEnum.FORBIDDEN.isSuccess());
+        return r;
+    }
+
+    public static ResponseResultSet notFound(HttpServletResponse response) {
+        response.setStatus(404);
+        ResponseResultSet r = new ResponseResultSet();
+        r.setCode(ResultCodeEnum.NOT_FOUND.getCode());
+        r.setMessage(ResultCodeEnum.NOT_FOUND.getMessage());
+        r.setSuccess(ResultCodeEnum.NOT_FOUND.isSuccess());
+        return r;
+    }
     /**
      * 根据结果的枚举类返回结果
      *

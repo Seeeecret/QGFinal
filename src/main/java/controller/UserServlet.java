@@ -3,7 +3,9 @@ package controller;
 import com.alibaba.fastjson.JSONObject;
 import constants.Role;
 import pojo.dto.ResponseResultSet;
+import pojo.po.User;
 import service.UserService;
+import utils.JwtUtil;
 import utils.Mapper;
 
 import javax.servlet.ServletException;
@@ -13,6 +15,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.Objects;
 
 import static constants.RoleConstants.TRUE;
 
@@ -95,5 +99,32 @@ public class UserServlet extends BaseServlet {
         }
         Mapper.writeValue(response.getWriter(), deleteResultSet);
 
+    }
+    public void updateUserInfo(HttpServletRequest request,
+                               HttpServletResponse response, JSONObject jsonObject)
+            throws ServletException, IOException, SQLException {
+        String token = JwtUtil.getToken(request);
+        String username = JwtUtil.getSubject(token);
+        int id = Integer.parseInt(Objects.requireNonNull(JwtUtil.getId(token)));
+        ResponseResultSet updateUserInfoResultSet = null;
+        HashMap<String,Object> jsonHashMap = new HashMap<>(jsonObject);
+        String parentEnterprise = (String) jsonHashMap.get("enterprise");
+        String parentEnterpriseCode = (String) jsonHashMap.get("enterpriseCode");
+
+        if(parentEnterprise==null|| "".equals(parentEnterprise)
+                || "".equals(jsonHashMap.get("enterpriseCode"))||jsonHashMap.get("enterpriseCode")==null){
+            UserService.updateInfoOnly(id,jsonHashMap);
+            updateUserInfoResultSet = ResponseResultSet.success(response);
+        }else {
+            User queryUser = UserService.query(parentEnterprise);
+            if (queryUser == null || !(UserService.checkEnterpriseCode(parentEnterpriseCode, queryUser))) {
+                UserService.updateInfoOnly(id, jsonHashMap);
+                updateUserInfoResultSet = ResponseResultSet.partialContent(response);
+            }else{
+                UserService.updateParentInfoOnly(id,jsonHashMap);
+                updateUserInfoResultSet = ResponseResultSet.success(response);
+            }
+        }
+        Mapper.writeValue(response.getWriter(), updateUserInfoResultSet);
     }
 }
