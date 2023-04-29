@@ -69,7 +69,7 @@ public class UserDAO {
 
     public static void updateInfoOnly(Connection connection, User user) {
         try {
-            CRUDUtil.executeSpecialUpdate("user", "where id= " + user.getUserId(), "info = " + user.getJsonInfo());
+            CRUDUtil.executeSpecialUpdate("user", "where id= " + user.getUserId(), "info = '" + user.getJsonInfo()+"'");
 
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -78,7 +78,7 @@ public class UserDAO {
 
     public static void updateParentInfoOnly(Connection connection, User user) {
         try {
-            CRUDUtil.executeSpecialUpdate("user", "where id= " + user.getUserId(), "info = " + user.getJsonInfo()+"parent_id = " + user.getParentId());
+            CRUDUtil.executeSpecialUpdate("user", "where id= " + user.getUserId(), "info = '" + user.getJsonInfo()+"'","parent_id = " + user.getParentId());
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }

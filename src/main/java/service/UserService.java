@@ -32,6 +32,21 @@ public class UserService {
         return user;
     }
 
+    public static User query(int id) throws SQLException {
+        User user = null;
+        // try-with-resources语句会自动关闭资源!!记得改
+        Connection connection = null;
+        try {
+            connection = CRUDUtil.getConnection();
+            user = UserDAO.query(connection, id);
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            CRUDUtil.close(connection);
+        }
+        return user;
+    }
+
     public static String login(String username, String password) throws SQLException {
         User user = null;
         Connection connection = null;
@@ -153,7 +168,9 @@ public class UserService {
     public static String getEnterpriseCode(User user) {
         return JSONObject.parseObject(user.getJsonInfo()).getString("enterpriseCode");
     }
-
+    public static String getEnterprise(User user) {
+        return JSONObject.parseObject(user.getJsonInfo()).getString("enterprise");
+    }
     public static boolean checkEnterpriseCode(String code, User user) {
         return code.equals(getEnterpriseCode(user));
     }
