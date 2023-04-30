@@ -285,8 +285,9 @@ public class CRUDUtil {
         }
         result = pstmt.executeUpdate();
     } catch (SQLException e) {
+            e.printStackTrace();
         throw new RuntimeException(e);
-    } finally {
+        } finally {
         if (pstmt != null) {
             pstmt.close();
         }

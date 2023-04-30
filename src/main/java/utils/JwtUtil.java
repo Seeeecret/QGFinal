@@ -46,7 +46,6 @@ public class JwtUtil {
     }
 
     public static String generateToken(String id, String subject, int roleId) {
-        // 加密算法
         // 获取当前时间
         long nowMillis = System.currentTimeMillis();
         // 创建 JWT 的签发时间
