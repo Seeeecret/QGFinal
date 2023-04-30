@@ -1,5 +1,7 @@
 package utils;
 
+import com.alibaba.fastjson.JSON;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -36,9 +38,13 @@ public class MyIOUtil {
         return result;
     }
     public static String URLtoJson(String paramIn) {
-        paramIn = paramIn.replaceAll("=","\":\"");
-        paramIn = paramIn.replaceAll("&","\",\"");
-        return"{\"" + paramIn +"\"}";
+        if(JSON.isValid(paramIn)){
+            return paramIn;
+        }else {
+            paramIn = paramIn.replaceAll("=", "\":\"");
+            paramIn = paramIn.replaceAll("&", "\",\"");
+            return "{\"" + paramIn + "\"}";
+        }
     }
 
 }

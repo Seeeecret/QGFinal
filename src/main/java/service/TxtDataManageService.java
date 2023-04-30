@@ -110,4 +110,19 @@ public class TxtDataManageService {
         TxtDAO.insertStatisticData(statisticTime,txtDataTimestamp,printerID);
     }
 
+    public static HashMap<String,Object> toWebSocketMap(PrinterTreatedMessage printerTreatedMessage, int printerId){
+        HashMap<String, Object> jsonHashMap = new HashMap<>();
+        PrinterStatus printerStatus = printerTreatedMessage.getPrinterStatus();
+        jsonHashMap.put("printerId",printerId);
+        jsonHashMap.put("statusValue",printerStatus.getStatusValue());
+        jsonHashMap.put("shortDescription",printerStatus.getShortDescription());
+        jsonHashMap.put("paramDescription",printerTreatedMessage.getParamDescription());
+        if(printerStatus == PrinterStatus.WORKBENCH_TEMPERATURE){
+            jsonHashMap.put("temperature",printerTreatedMessage.getFirstParam());
+        }else{
+            jsonHashMap.put("temperature",null);
+        }
+        return jsonHashMap;
+    }
+
 }

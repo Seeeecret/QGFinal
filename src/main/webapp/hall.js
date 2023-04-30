@@ -1,5 +1,7 @@
 // 登陆后大厅页面的js
 $(document).ready(function () {
+    var roleId;
+    var username;
     var token = localStorage.getItem('token');
     // 使用Jquery的选择器和html方法，获取和设置元素的内容
     setInterval(function () {
@@ -18,9 +20,11 @@ $(document).ready(function () {
         },
         dataType: "json",
         success: function (data, status, jqXHR) {
+            roleId = data.data.roleId;
+            username = data.data.username;
             // 处理响应数据
             if (data.success === true) {
-                $("#title").text("欢迎用户 "+data.data.username+" 进入大厅");
+                $("#title").text("欢迎用户 "+username+" 进入大厅");
             } else {
                 alert("Please login first");
                 window.location.href = "login.html";
@@ -41,7 +45,6 @@ $(document).ready(function () {
     });
     $("#showPrintersBtn").click(function () {
         // 获取用户的roleId和username
-        var roleId = localStorage.getItem("roleId");
         var username = localStorage.getItem("username");
 
         // 发送请求
@@ -58,9 +61,9 @@ $(document).ready(function () {
                 // 处理响应数据
                 if (data.success === true) {
                     // 显示打印机链接
-                    var printers = data.data.printers;
+                    var printers = data.data.printerList;
                     for (var i = 0; i < printers.length; i++) {
-                        var printerLink = "<a href='printer_detail.html?id=" + printers[i].id + "'>" + printers[i].name + "</a>";
+                        var printerLink = "<a href='printerDetail.html?printerId=" + printers[i].printerId + "'>" + printers[i].name + "</a>";
                         $("#printerLinks").append(printerLink);
                     }
                 } else {
