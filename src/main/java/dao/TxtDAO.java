@@ -38,6 +38,7 @@ public class TxtDAO {
             LocalDate statisticDataDate = statisticTimeSet.getTimestamp("statistic_time").toLocalDateTime().toLocalDate();
             if (statisticDataDate.isEqual(txtDataTimestamp.toLocalDateTime().toLocalDate())) {
                 updateStatisticData(statisticTime, txtDataTimestamp, printerID);
+                statisticTimeResultSetWrapper.close();
                 return;
             }
         }
@@ -45,6 +46,7 @@ public class TxtDAO {
                 , printerID, txtDataTimestamp
                 , statisticTime.getOnTime(), statisticTime.getPrintTime()
                 , statisticTime.getIdleTime(), statisticTime.getExceptionTime());
+        statisticTimeResultSetWrapper.close();
         return;
     }
 

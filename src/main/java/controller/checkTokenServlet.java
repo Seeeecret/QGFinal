@@ -20,9 +20,9 @@ public class checkTokenServlet extends BaseServlet{
         boolean isLogin = JwtUtil.validateToken(token);
         ResponseResultSet checkLoginStatusResultSet = null;
         if (isLogin) {
-            Integer roleId = JwtUtil.getRoleId(token);
             checkLoginStatusResultSet = ResponseResultSet.success(response);
-            checkLoginStatusResultSet.data("roleId",roleId);
+            checkLoginStatusResultSet.data("roleId",JwtUtil.getRoleId(token));
+            checkLoginStatusResultSet.data("username",JwtUtil.getSubject(token));
         } else {
             checkLoginStatusResultSet = ResponseResultSet.fail(response);
         }

@@ -26,6 +26,7 @@ import static pojo.dto.ResponseResultSet.*;
  */
 @WebServlet("/user")
 public class UserServlet extends BaseServlet {
+    public static final Integer DEFAULT_PARENT_ID = 0;
 
     public void login(HttpServletRequest request,
                       HttpServletResponse response, JSONObject jsonObject)
@@ -120,37 +121,49 @@ public class UserServlet extends BaseServlet {
         ResponseResultSet updateUserInfoResultSet = null;
 //        将jsonObject转换为hashmap,并获取父企业和父企业代码
         HashMap<String, Object> jsonHashMap = new HashMap<>(jsonObject);
-        String parentEnterprise = (String) jsonHashMap.get("enterprise");
+        String webParentEnterprise = (String) jsonHashMap.get("enterprise");
         String webParentEnterpriseCode = (String) jsonHashMap.get("enterpriseCode");
 //        移除不需要的字段
         jsonHashMap.remove("method");
         jsonHashMap.remove("page");
 
-        User queryParentUser = UserService.query(parentEnterprise);
+        User queryParentUser = UserService.query(webParentEnterprise);
         User idUser = UserService.query(id);
-
-        if (parentEnterprise == null || "".equals(parentEnterprise)
-                || "".equals(jsonHashMap.get("enterpriseCode")) || jsonHashMap.get("enterpriseCode") == null) {
+        switch (idUser.getRole().getRoleId()) {
+            case 3:
+                if (webParentEnterprise == null || "".equals(webParentEnterprise)
+                        || "".equals(jsonHashMap.get("enterpriseCode")) || jsonHashMap.get("enterpriseCode") == null) {
 //       如果父企业为空或者父企业代码为空,则不更新父企业和父企业代码，维持原样
-            jsonHashMap.replace("enterprise", UserService.getEnterprise(idUser));
-            jsonHashMap.replace("enterpriseCode", UserService.getEnterpriseCode(idUser));
+                    jsonHashMap.replace("enterprise", UserService.getEnterprise(idUser));
+                    jsonHashMap.replace("enterpriseCode", UserService.getEnterpriseCode(idUser));
 
-            UserService.updateInfoOnly(id, jsonHashMap);
-            updateUserInfoResultSet = success(response);
-        } else {
+                    UserService.updateInfoOnly(id, jsonHashMap);
+                    updateUserInfoResultSet = success(response);
+                } else {
+                    if (queryParentUser == null || !(UserService.checkEnterpriseCode(webParentEnterpriseCode, queryParentUser))) {
+                        //       如果父企业为空或者父企业代码为空,则不更新父企业和父企业代码，维持原样
+                        jsonHashMap.replace("enterprise", UserService.getEnterprise(idUser));
+                        jsonHashMap.replace("enterpriseCode", UserService.getEnterpriseCode(idUser));
 
-            if (queryParentUser == null || !(UserService.checkEnterpriseCode(webParentEnterpriseCode, queryParentUser))) {
-                //       如果父企业为空或者父企业代码为空,则不更新父企业和父企业代码，维持原样
-                jsonHashMap.replace("enterprise", UserService.getEnterprise(idUser));
-                jsonHashMap.replace("enterpriseCode", UserService.getEnterpriseCode(idUser));
+                        UserService.updateInfoOnly(id, jsonHashMap);
+                        updateUserInfoResultSet = partialContent(response);
 
-                UserService.updateInfoOnly(id, jsonHashMap);
-                updateUserInfoResultSet = partialContent(response);
-
-            } else {
-                UserService.updateParentInfoOnly(id, jsonHashMap);
+                    } else {
+                        UserService.updateParentInfoOnly(id,queryParentUser.getUserId(),jsonHashMap);
+                        updateUserInfoResultSet = success(response);
+                    }
+                }
+                break;
+            case 2:
+                UserService.updateParentInfoOnly(id, DEFAULT_PARENT_ID,jsonHashMap);
                 updateUserInfoResultSet = success(response);
-            }
+                break;
+            case 1:
+                UserService.updateInfoOnly(id, jsonHashMap);
+                updateUserInfoResultSet = success(response);
+                break;
+            default:
+                break;
         }
         Mapper.writeValue(response.getWriter(), updateUserInfoResultSet);
     }
@@ -163,8 +176,7 @@ public class UserServlet extends BaseServlet {
         User user = UserService.query(username);
         ResponseResultSet queryUserInfoResultSet = null;
         if (user != null) {
-            queryUserInfoResultSet = success(response);
-            queryUserInfoResultSet.data("userInfo", user.getJsonInfo());
+            queryUserInfoResultSet = success(response).data("userInfo", user.getJsonInfo()).data("username", user.getUsername());
         } else {
             queryUserInfoResultSet = fail(response);
         }

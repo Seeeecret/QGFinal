@@ -74,9 +74,9 @@ $(document).ready(function () {
                 // 处理响应数据
                 if (data.code === 206) {
                     queryUserInfo();
-                    alert("个人信息修改成功,绑定企业操作失败");
+                    alert("仅个人信息修改成功,其他操作失败或无响应");
                 } else if (data.code === 200) {
-                    alert("绑定企业操作失败和个人信息修改均已成功");
+                    alert("绑定企业操作和个人信息修改均已成功");
                 } else
                     alert("修改失败")
             },
@@ -114,8 +114,8 @@ function queryUserInfo() {
             },
             dataType: "json",
             success: function (data, status, jqXHR) {
+                $("#username").val(data.data.username);
                 let Info = JSON.parse(data.data.userInfo);
-                $("#username").val(localStorage.getItem("username"));
                 $("#sex").val(Info.sex);
                 $("#email").val(Info.email);
                 $("#phone").val(Info.phone);

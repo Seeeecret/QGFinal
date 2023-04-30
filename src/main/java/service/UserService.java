@@ -83,16 +83,16 @@ public class UserService {
             CRUDUtil.close(connection);
         }
  }
- public static void updateParentInfoOnly(int id, HashMap<String,Object> jsonHashMap) throws SQLException {
+ public static void updateParentInfoOnly(int webUserId, int sqlParentId, HashMap<String,Object> jsonHashMap) throws SQLException {
      User user = null;
      Connection connection = null;
      String jsonString = JSON.toJSONString(jsonHashMap);
      try {
          connection = CRUDUtil.getConnection();
-         user = UserDAO.query(connection, id);
+         user = UserDAO.query(connection, webUserId);
          if (user != null) {
              user.setJsonInfo(jsonString);
-             user.setParentId((Integer) jsonHashMap.get("parentId"));
+             user.setParentId(sqlParentId);
              UserDAO.updateParentInfoOnly(connection, user);
              return;
          }
