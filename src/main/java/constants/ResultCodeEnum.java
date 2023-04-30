@@ -12,6 +12,8 @@ public enum ResultCodeEnum {
 
     NO_CONTENT(true, 204, "成功,请求正常处理但无返回数据"),
 
+    PARTIAL_CONTENT(true, 206, "成功,请求正常处理并返回部分数据"),
+
     // 失败
     SERVER_ERROR(false, 500, "失败,服务器内部错误"),
 
@@ -19,6 +21,7 @@ public enum ResultCodeEnum {
     UNAUTHORIZED(false, 401, "失败,请求未认证"),
     NOT_FOUND(false, 404, "失败,资源不存在或路径错误"),
     FORBIDDEN(false, 403, "失败,没有资源访问权限");
+
 
     private final boolean success;
     private final int code;

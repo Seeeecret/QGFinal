@@ -10,7 +10,7 @@ $(document).ready(function () {
         let username = $("#username").val();
         let password = $("#password").val();
         let remember = $("#rememberBtn").prop("checked");
-        if(username && password) {
+        if (username && password) {
             $("#usernameOrPassword-error").text("");
             $.ajax({
                 type: "POST",
@@ -38,8 +38,12 @@ $(document).ready(function () {
 
                     }
                 },
-                error: function () {
-                    alert("System error");
+                error: function (data, status, jqXHR) {
+                    if (data.responseJSON.code === 400 && data.responseJSON.success === false) {
+                        alert("Username or password is incorrect");
+                    } else {
+                        alert("System error");
+                    }
                 }
             });
         } else {
