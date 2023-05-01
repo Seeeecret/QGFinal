@@ -57,7 +57,7 @@ public class BaseServlet extends HttpServlet {
         String methodName = null;
         Class<? extends BaseServlet> actionClass = this.getClass();
         String jsonString = MyIOUtil.toString(request.getInputStream(), "UTF-8");
-        JSONObject jsonObject = JSON.parseObject(MyIOUtil.URLtoJson(jsonString));
+    JSONObject jsonObject = JSON.parseObject(MyIOUtil.URLtoJson(jsonString));
         methodName = jsonObject.getString("method");
         try{
         Method method = actionClass.getDeclaredMethod(methodName, HttpServletRequest.class, HttpServletResponse.class, JSONObject.class);

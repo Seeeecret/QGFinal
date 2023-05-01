@@ -21,13 +21,23 @@ public class PrinterService {
         CRUDUtil.ResultSetWrapper printerResultSetWrapper = PrinterDAO.queryAvailablePrinter(user, roleId);
         ResultSet resultSet = printerResultSetWrapper.getResultSet();
         List<Printer> printerList = new LinkedList<>();
-        while(resultSet.next()){
-            Printer printer = new Printer(resultSet.getInt(1),resultSet.getString(2),resultSet.getString(3),resultSet.getInt(4));
+        while (resultSet.next()) {
+            Printer printer = new Printer(resultSet.getInt(1), resultSet.getString(2), resultSet.getString(3), resultSet.getInt(4));
             printerList.add(printer);
         }
         printerResultSetWrapper.close();
         return printerList;
     }
 
+    public static String getPrinterName(int printerId) throws SQLException {
+        CRUDUtil.ResultSetWrapper printerResultSetWrapper = PrinterDAO.queryPrinterName(printerId);
+        ResultSet resultSet = printerResultSetWrapper.getResultSet();
+        String printerName = null;
+        while (resultSet.next()) {
+            printerName = resultSet.getString(1);
+        }
+        printerResultSetWrapper.close();
+        return printerName;
     }
+}
 

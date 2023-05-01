@@ -18,7 +18,6 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Objects;
 
-import static constants.RoleConstants.TRUE;
 import static pojo.dto.ResponseResultSet.*;
 
 /**
@@ -38,7 +37,7 @@ public class UserServlet extends BaseServlet {
 
         ResponseResultSet loginResultSet = null;
         if (token != null) {
-            if (TRUE.equals(remember)) {
+            if ("true".equals(remember)) {
                 Cookie usernameCookie = new Cookie("username", username);
                 Cookie passwordCookie = new Cookie("password", password);
                 usernameCookie.setMaxAge(60 * 60 * 24 * 7);

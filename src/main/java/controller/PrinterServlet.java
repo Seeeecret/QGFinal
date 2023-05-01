@@ -38,4 +38,14 @@ public class PrinterServlet extends BaseServlet {
                 , ResponseResultSet.success(response)
                         .data("printerList", availablePrinterList));
     }
+    public void getPrinterName(HttpServletRequest request,
+                           HttpServletResponse response, JSONObject jsonObject)
+            throws IOException, SQLException {
+        String method = jsonObject.getString("method");
+        int printerId = jsonObject.getInteger("printerId");
+        String printerName = PrinterService.getPrinterName(printerId);
+        Mapper.writeValue(response.getWriter()
+                , ResponseResultSet.success(response)
+                        .data("printerName", printerName));
+    }
 }

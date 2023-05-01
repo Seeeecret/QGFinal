@@ -3,9 +3,8 @@ package utils;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.LinkedList;
-import java.util.ListIterator;
 import java.util.Properties;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
  * 我的连接池
@@ -14,17 +13,18 @@ import java.util.Properties;
  * @date 2023/04/17
  */
 public class MyConnectionPool {
-    protected static LinkedList<Connection> connections;
-    protected int initialSize;
-    protected int maxActive;
-    protected int maxIdle;
-    protected int minIdle;
-    protected int maxWait;
-    protected long maxAge;
-    protected String username;
-    protected String password;
-    protected String driverClassName;
-    protected String url;
+    private final ConcurrentLinkedQueue<Connection> connections;
+
+    private final int initialSize;
+    private final int maxActive;
+    private final int maxIdle;
+    private final int minIdle;
+    private final int maxWait;
+    private final long maxAge;
+    private final String username;
+    private final String password;
+    private final String driverClassName;
+    private final String url;
 
     public MyConnectionPool(Properties props) throws SQLException, ClassNotFoundException {
         this.initialSize = Integer.parseInt(props.getProperty("initialSize"));
@@ -38,7 +38,7 @@ public class MyConnectionPool {
         this.username = props.getProperty("username");
         this.password = props.getProperty("password");
         Class.forName(driverClassName);
-        connections = new LinkedList<Connection>();
+        connections = new ConcurrentLinkedQueue<>();
         for (int i = 0; i < initialSize; i++) {
             Connection conn = DriverManager.getConnection(url, username, password);
             long createTime = System.currentTimeMillis();
@@ -72,51 +72,39 @@ public class MyConnectionPool {
     }
 
     /**
-     * 获得连接
+     * 获取连接
      *
-     * @return {@link Connection}
-     * @throws SQLException sqlexception异常
+     * @return 连接
+     * @throws SQLException SQL异常
      */
-    public synchronized Connection getConnection() throws SQLException {
+    public Connection getConnection() throws SQLException {
         while (connections.size() < minIdle) {
             Connection conn = DriverManager.getConnection(url, username, password);
             connections.add(conn);
         }
 
-        ListIterator<Connection> it = connections.listIterator();
-        while (it.hasNext()) {
-            Connection conn = it.next();
-            if (isConnectionValid(conn)) {
-//                it.remove();
-                return conn;
-            } else {
-                if (conn.isClosed()) {
-                    it.remove();
-                }
-            }
-        }
-
-        if (connections.size() < maxActive) {
-            Connection conn = DriverManager.getConnection(url, username, password);
-            return conn;
-        }
-
-        long start = System.currentTimeMillis();
-        while (System.currentTimeMillis() - start < maxWait) {
-            for (Connection conn : connections) {
-                if (isConnectionValid(conn)) {
-                    connections.remove(conn);
-                    return conn;
-                }
-            }
+        Connection conn = connections.poll();
+        while (conn != null && !isConnectionValid(conn)) {
             try {
-                Thread.sleep(100);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
+                conn.close();
+            } catch (SQLException e) {
+                // ignore exception on close
             }
+            conn = connections.poll();
         }
 
-        throw new SQLException("Connection wait timeout");
+        if (conn == null && connections.size() < maxActive) {
+            conn = DriverManager.getConnection(url, username, password);
+        }
+
+        if (conn != null) {
+            long createTime = System.currentTimeMillis();
+            conn.setClientInfo("createTime", String.valueOf(createTime));
+        } else {
+            throw new SQLException("Connection pool exhausted.");
+        }
+
+        return conn;
     }
 
     /**
@@ -125,10 +113,9 @@ public class MyConnectionPool {
      * @param conn 连接
      * @throws SQLException sqlexception异常
      */
-    public synchronized void releaseConnection(Connection conn) throws SQLException {
-        connections.remove(conn);
-        if (connections.size() < maxIdle) {
-            connections.add(conn);
+    public  void releaseConnection(Connection conn) throws SQLException {
+        if (conn!=null && connections.size() < maxIdle) {
+            connections.offer(conn);
         } else {
             conn.close();
         }
@@ -139,9 +126,11 @@ public class MyConnectionPool {
      *
      * @throws SQLException sqlexception异常
      */
-    public synchronized void closeAll() throws SQLException {
+    public  void closeAll() throws SQLException {
         for (Connection conn : connections) {
-            conn.close();
+            if(conn!=null) {
+                conn.close();
+            }
         }
         connections.clear();
     }
