@@ -1,8 +1,11 @@
 package controller;
 
-import dao.UserDAO;
+import com.alibaba.fastjson.JSONObject;
+import constants.Role;
+import pojo.dto.ResponseResultSet;
 import pojo.po.User;
 import service.UserService;
+import utils.JwtUtil;
 import utils.Mapper;
 
 import javax.servlet.ServletException;
@@ -13,142 +16,170 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.HashMap;
+import java.util.Objects;
 
 import static constants.RoleConstants.TRUE;
+import static pojo.dto.ResponseResultSet.*;
 
 /**
  * @author Secret
  */
 @WebServlet("/user")
 public class UserServlet extends BaseServlet {
-    public void addMerit(HttpServletRequest request,
-                         HttpServletResponse response)
-            throws IOException {
-        // 设置响应内容类型
-        HashMap<String, Object> jsonMap = new HashMap<>(5);
-        String username = request.getParameter("username");
-        int i = 0;
-        try {
-            i = UserDAO.addMerit(username);
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        } finally {
-            int merit = UserService.query(username).getMerit();
-            if (i == 0) {
-                jsonMap.put("data", i);
-                jsonMap.put("code", 400);
-                jsonMap.put("msg", "功德增加失败");
-            } else {
-                jsonMap.put("code", 200);
-                jsonMap.put("data", merit);
-                jsonMap.put("msg", "功德增加成功");
-            }
-        }
-        Mapper.writeValue(response.getWriter(), jsonMap);
-
-    }
-
-    public void queryMerit(HttpServletRequest request,
-                      HttpServletResponse response)
-            throws IOException {
-        // 设置响应内容类型
-        HashMap<String, Object> jsonMap = new HashMap<>(5);
-        String username = request.getParameter("username");
-        int i = 0;
-        i = UserService.query(username).getMerit();
-        jsonMap.put("code", 200);
-        jsonMap.put("msg", "功德查询成功");
-        jsonMap.put("data", i);
-        Mapper.writeValue(response.getWriter(), jsonMap);
-    }
+    public static final Integer DEFAULT_PARENT_ID = 0;
 
     public void login(HttpServletRequest request,
-                      HttpServletResponse response)
-            throws IOException {
-        // 设置响应内容类型
-        String username = request.getParameter("username");
-        String password = request.getParameter("password");
-        String remember = request.getParameter("remember");
-        User login;
-        login = UserService.login(username, password);
-        HashMap<String, Object> jsonMap = new HashMap<>(5);
-        if (login != null) {
-            if(TRUE.equals(remember)) {
+                      HttpServletResponse response, JSONObject jsonObject)
+            throws IOException, SQLException {
+        String username = jsonObject.getString("username");
+        String password = jsonObject.getString("password");
+        String remember = jsonObject.getString("remember");
+        String token = UserService.login(username, password);
+
+        ResponseResultSet loginResultSet = null;
+        if (token != null) {
+            if (TRUE.equals(remember)) {
                 Cookie usernameCookie = new Cookie("username", username);
                 Cookie passwordCookie = new Cookie("password", password);
                 usernameCookie.setMaxAge(60 * 60 * 24 * 7);
                 passwordCookie.setMaxAge(60 * 60 * 24 * 7);
                 response.addCookie(usernameCookie);
                 response.addCookie(passwordCookie);
-
             }
-            jsonMap.put("code", 200);
-            jsonMap.put("msg", "登陆成功");
-            jsonMap.put("data", login);
+            loginResultSet = success(response);
+            response.addHeader("Authorization", "Bearer " + token);
         } else {
-            jsonMap.put("code", 400);
-            jsonMap.put("msg", "登陆失败");
+            loginResultSet = fail(response);
         }
-        Mapper.writeValue(response.getWriter(), jsonMap);
+        Mapper.writeValue(response.getWriter(), loginResultSet);
     }
 
     public void register(HttpServletRequest request,
                          HttpServletResponse response)
-            throws ServletException, IOException {
-        // 设置响应内容类型
+            throws ServletException, IOException, SQLException {
         String username = request.getParameter("username");
         String password = request.getParameter("password");
-        boolean register = UserService.register(username, password);
-        HashMap<String, Object> jsonMap = new HashMap<>(5);
+        int roleId = Integer.parseInt(request.getParameter("roleId"));
+        boolean register = UserService.register(username, password, Role.fromRoleId(roleId), null, null);
+        ResponseResultSet registerResultSet = null;
         if (register) {
-            jsonMap.put("code", 200);
-            jsonMap.put("msg", "注册成功");
+            registerResultSet = success(response);
         } else {
-            jsonMap.put("code", 400);
-            jsonMap.put("msg", "用户名重复, 注册失败");
+            registerResultSet = fail(response);
         }
-        Mapper.writeValue(response.getWriter(), jsonMap);
+        Mapper.writeValue(response.getWriter(), registerResultSet);
     }
 
     public void changePassword(HttpServletRequest request,
-                      HttpServletResponse response)
-            throws IOException {
-        // 设置响应内容类型
+                               HttpServletResponse response)
+            throws IOException, SQLException {
         String username = request.getParameter("username");
         String password = request.getParameter("password");
         boolean changePassword = UserService.changePassword(username, password);
-        HashMap<String, Object> jsonMap = new HashMap<>(5);
+        ResponseResultSet changePasswordResultSet = null;
         if (changePassword) {
-            jsonMap.put("code", 200);
-            jsonMap.put("msg", "修改成功");
+            changePasswordResultSet = success(response);
         } else {
-            jsonMap.put("code", 400);
-            jsonMap.put("msg", "用户不存在, 修改失败");
+            changePasswordResultSet = fail(response);
         }
-        Mapper.writeValue(response.getWriter(), jsonMap);
+        Mapper.writeValue(response.getWriter(), changePasswordResultSet);
     }
 
     public void deleteUser(HttpServletRequest request,
-                      HttpServletResponse response)
-            throws ServletException, IOException {
-        // 设置响应内容类型
+                           HttpServletResponse response)
+            throws ServletException, IOException, SQLException {
         String username = request.getParameter("username");
         String password = request.getParameter("password");
 
-        User login = UserService.login(username, password);
-        HashMap<String, Object> jsonMap = new HashMap<>(5);
-
-        if (login != null) {
-            boolean delete = UserService.deleteUser(username);
-            jsonMap.put("username", login.getUsername());
-            jsonMap.put("password", login.getPassword());
-            jsonMap.put("code", 200);
-            jsonMap.put("msg", "删除成功");
+        String token = UserService.login(username, password);
+        ResponseResultSet deleteResultSet = null;
+        if (token != null) {
+            UserService.deleteUser(username);
+            deleteResultSet = success(response);
         } else {
-            jsonMap.put("code", 400);
-            jsonMap.put("msg", "账号或密码错误, 删除失败");
+            deleteResultSet = fail(response);
         }
-        Mapper.writeValue(response.getWriter(), jsonMap);
+        Mapper.writeValue(response.getWriter(), deleteResultSet);
 
+    }
+
+    /**
+     * 更新用户信息
+     *
+     * @param request    请求
+     * @param response   响应
+     * @param jsonObject json对象
+     * @throws ServletException servlet异常
+     * @throws IOException      ioexception
+     * @throws SQLException     sqlexception异常
+     */
+    public void updateUserInfo(HttpServletRequest request,
+                               HttpServletResponse response, JSONObject jsonObject)
+            throws ServletException, IOException, SQLException {
+        String token = JwtUtil.getToken(request);
+        int id = Integer.parseInt(Objects.requireNonNull(JwtUtil.getId(token)));
+        ResponseResultSet updateUserInfoResultSet = null;
+//        将jsonObject转换为hashmap,并获取父企业和父企业代码
+        HashMap<String, Object> jsonHashMap = new HashMap<>(jsonObject);
+        String webParentEnterprise = (String) jsonHashMap.get("enterprise");
+        String webParentEnterpriseCode = (String) jsonHashMap.get("enterpriseCode");
+//        移除不需要的字段
+        jsonHashMap.remove("method");
+        jsonHashMap.remove("page");
+
+        User queryParentUser = UserService.query(webParentEnterprise);
+        User idUser = UserService.query(id);
+        switch (idUser.getRole().getRoleId()) {
+            case 3:
+                if (webParentEnterprise == null || "".equals(webParentEnterprise)
+                        || "".equals(jsonHashMap.get("enterpriseCode")) || jsonHashMap.get("enterpriseCode") == null) {
+//       如果父企业为空或者父企业代码为空,则不更新父企业和父企业代码，维持原样
+                    jsonHashMap.replace("enterprise", UserService.getEnterprise(idUser));
+                    jsonHashMap.replace("enterpriseCode", UserService.getEnterpriseCode(idUser));
+
+                    UserService.updateInfoOnly(id, jsonHashMap);
+                    updateUserInfoResultSet = success(response);
+                } else {
+                    if (queryParentUser == null || !(UserService.checkEnterpriseCode(webParentEnterpriseCode, queryParentUser))) {
+                        //       如果父企业为空或者父企业代码为空,则不更新父企业和父企业代码，维持原样
+                        jsonHashMap.replace("enterprise", UserService.getEnterprise(idUser));
+                        jsonHashMap.replace("enterpriseCode", UserService.getEnterpriseCode(idUser));
+
+                        UserService.updateInfoOnly(id, jsonHashMap);
+                        updateUserInfoResultSet = partialContent(response);
+
+                    } else {
+                        UserService.updateParentInfoOnly(id,queryParentUser.getUserId(),jsonHashMap);
+                        updateUserInfoResultSet = success(response);
+                    }
+                }
+                break;
+            case 2:
+                UserService.updateParentInfoOnly(id, DEFAULT_PARENT_ID,jsonHashMap);
+                updateUserInfoResultSet = success(response);
+                break;
+            case 1:
+                UserService.updateInfoOnly(id, jsonHashMap);
+                updateUserInfoResultSet = success(response);
+                break;
+            default:
+                break;
+        }
+        Mapper.writeValue(response.getWriter(), updateUserInfoResultSet);
+    }
+
+    public void queryUserInfo(HttpServletRequest request,
+                              HttpServletResponse response, JSONObject jsonObject)
+            throws ServletException, IOException, SQLException {
+        String token = JwtUtil.getToken(request);
+        String username = JwtUtil.getSubject(token);
+        User user = UserService.query(username);
+        ResponseResultSet queryUserInfoResultSet = null;
+        if (user != null) {
+            queryUserInfoResultSet = success(response).data("userInfo", user.getJsonInfo()).data("username", user.getUsername());
+        } else {
+            queryUserInfoResultSet = fail(response);
+        }
+        Mapper.writeValue(response.getWriter(), queryUserInfoResultSet);
     }
 }

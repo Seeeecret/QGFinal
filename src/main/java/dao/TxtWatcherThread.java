@@ -6,9 +6,12 @@ import java.io.*;
 import java.nio.file.*;
 
 public class TxtWatcherThread extends Thread {
+    int printerId;
     public TxtWatcherThread() {
     }
-
+    public TxtWatcherThread(int printerId) {
+        this.printerId = printerId;
+    }
     public TxtWatcherThread(String name) {
         super(name);
     }
@@ -55,7 +58,7 @@ public class TxtWatcherThread extends Thread {
 
 //                换成发送到服务器的方法
 //                System.out.println(content);
-                txtDataHttpService.sendTxtData(content);
+                txtDataHttpService.sendTxtData(content, printerId);
             } catch (InterruptedException | IOException e) {
                 throw new RuntimeException(e);
             }

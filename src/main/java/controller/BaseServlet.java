@@ -35,13 +35,13 @@ public class BaseServlet extends HttpServlet {
                 methodName = jsonObject.getString("method");
                 Method method = actionClass.getMethod(methodName, HttpServletRequest.class, HttpServletResponse.class, JSONObject.class);
                 method.invoke(this, request, response, jsonObject);
-//        如果是表单格式的请求，就从请求参数中获取method参数
+//        如果是get格式的请求，就从请求参数中获取method参数
             } else {
                 methodName = request.getParameter("method");
                 if (methodName == null || methodName.isEmpty()) {
                     throw new RuntimeException("没有传入method参数");
                 }
-                Method method = actionClass.getMethod(methodName, HttpServletRequest.class, HttpServletResponse.class);
+                Method method = actionClass.getDeclaredMethod(methodName, HttpServletRequest.class, HttpServletResponse.class);
                 method.invoke(this, request, response);
             }// 通过反射调用子类的方法
         } catch (InvocationTargetException | IllegalAccessException | NoSuchMethodException e) {
@@ -50,7 +50,21 @@ public class BaseServlet extends HttpServlet {
 
     }
 
-    public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        doGet(request, response);
+    public void doPost(HttpServletRequest request, HttpServletResponse response) throws  IOException {
+        request.setCharacterEncoding("UTF-8");
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        String methodName = null;
+        Class<? extends BaseServlet> actionClass = this.getClass();
+        String jsonString = MyIOUtil.toString(request.getInputStream(), "UTF-8");
+        JSONObject jsonObject = JSON.parseObject(MyIOUtil.URLtoJson(jsonString));
+        methodName = jsonObject.getString("method");
+        try{
+        Method method = actionClass.getDeclaredMethod(methodName, HttpServletRequest.class, HttpServletResponse.class, JSONObject.class);
+        method.invoke(this, request, response, jsonObject);
+        } catch (InvocationTargetException | IllegalAccessException | NoSuchMethodException e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
     }
 }

@@ -10,7 +10,51 @@ import java.util.Properties;
  * @author Secret
  */
 public class CRUDUtil {
+    /**
+     * ResultSetWrapper类，用于包装ResultSet对象
+     *
+     * @author Secret
+     * @date 2023/04/29
+     */
+    public static class ResultSetWrapper{
+        private ResultSet resultSet;
+        private PreparedStatement preparedStatement;
+        private Connection connection;
 
+        public ResultSetWrapper(ResultSet resultSet, PreparedStatement preparedStatement, Connection connection) {
+            this.resultSet = resultSet;
+            this.preparedStatement = preparedStatement;
+            this.connection = connection;
+        }
+
+        public ResultSet getResultSet() {
+            return resultSet;
+        }
+
+        public PreparedStatement getPreparedStatement() {
+            return preparedStatement;
+        }
+
+        public Connection getConnection() {
+            return connection;
+        }
+
+        public void close() {
+            try {
+                if (resultSet!=null) {
+                    resultSet.close();
+                }
+                if (preparedStatement!=null) {
+                    preparedStatement.close();
+                }
+                if (connection!=null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
     private static MyConnectionPool myConnectionPool;
 
     static {
@@ -106,27 +150,36 @@ public class CRUDUtil {
      * @throws SQLException sqlexception异常
      */
     public static void createNewTable(String createTableSQL) throws SQLException {
-        try (Connection connection = myConnectionPool.getConnection(); Statement statement = connection.createStatement()) {
+        Statement statement = null;
+        Connection connection = null;
+        try {
+            connection = myConnectionPool.getConnection();
+            statement = connection.createStatement();
             statement.execute(createTableSQL);
         } catch (SQLException e) {
             throw new RuntimeException(e);
+        } finally {
+            CRUDUtil.close(null, null, statement, connection);
         }
     }
 
     /**
-     * 执行查询语句
+     * 执行普通查询语句
      *
-     * @param sql    sql
-     * @param params 参数
+     * @param params               数量可变的参数
+     * @param PreparedStatementSQL 预编译sql
+     * @return {@link ResultSetWrapper}
      */
-    public static void executeCommonQuery(String sql, Object... params) {
+    public static ResultSetWrapper executeCommonQuery(String PreparedStatementSQL, Object... params) {
         ResultSet rs;
-        try (Connection connection = CRUDUtil.getConnection(); PreparedStatement pstmt = connection.prepareStatement(sql)) {
+        try  {
+            Connection connection = CRUDUtil.getConnection();
+            PreparedStatement queryStatement = connection.prepareStatement(PreparedStatementSQL);
             for (int i = 0; i < params.length; i++) {
-                pstmt.setObject(i + 1, params[i]);
+                queryStatement.setObject(i + 1, params[i]);
             }
-            rs = pstmt.executeQuery();
-            showResultSet(rs);
+            rs = queryStatement.executeQuery();
+            return new ResultSetWrapper(rs,queryStatement,connection);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -139,7 +192,7 @@ public class CRUDUtil {
      * @param tableName        表名
      * @param otherLimits      其他限制条件，如 where ... 注意字符串要用\'转义单引号
      */
-    public static void executeSpecialQuery(String queryContentName, String tableName, String otherLimits) {
+    public static ResultSetWrapper executeSpecialQuery(String queryContentName, String tableName, String otherLimits) {
         String sql = "select " +
                 queryContentName +
                 " from " +
@@ -147,9 +200,11 @@ public class CRUDUtil {
                 " " +
                 otherLimits;
         ResultSet rs;
-        try (Connection connection = CRUDUtil.getConnection(); PreparedStatement pstmt = connection.prepareStatement(sql)) {
-            rs = pstmt.executeQuery();
-            showResultSet(rs);
+        try  {
+            Connection connection = CRUDUtil.getConnection();
+            PreparedStatement queryStatement = connection.prepareStatement(sql);
+            rs = queryStatement.executeQuery();
+            return new ResultSetWrapper(rs,queryStatement,connection);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -230,8 +285,9 @@ public class CRUDUtil {
         }
         result = pstmt.executeUpdate();
     } catch (SQLException e) {
+            e.printStackTrace();
         throw new RuntimeException(e);
-    } finally {
+        } finally {
         if (pstmt != null) {
             pstmt.close();
         }
