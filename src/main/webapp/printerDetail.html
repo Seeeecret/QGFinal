@@ -20,40 +20,43 @@
   <button class="button" id="startBtn">启动后台监听线程</button>
   <table>
     <tr>
-      <td>打印机状态：</td>
-      <td id="printerStatus"></td>
+      <td class="staticTD">打印机名：</td>
+      <td class="dynamicTD" id="printerName"></td>
     </tr>
     <tr>
-      <td>当前状态描述：</td>
-      <td id="printerReason"></td>
+      <td class="staticTD">打印机状态码：</td>
+      <td class="dynamicTD" id="printerStatus"></td>
     </tr>
     <tr>
-      <td>任务进度：</td>
-      <td id="taskProgress"></td>
+      <td class="staticTD">当前状态描述：</td>
+      <td class="dynamicTD" id="printerReason"></td>
     </tr>
     <tr>
-      <td>当前温度：</td>
-      <td id="printerTemperature"></td>
+      <td class="staticTD">任务进度：</td>
+      <td class="dynamicTD" id="printerProgress">加载中</td>
     </tr>
     <tr>
-      <td>今日累积开机时间：</td>
-      <td id="uptimeToday"></td>
+      <td class="staticTD">当前温度：</td>
+      <td class="dynamicTD" id="printerTemperature"></td>
     </tr>
     <tr>
-      <td>今日累积打印时间：</td>
-      <td id="printTimeToday"></td>
+      <td class="staticTD">今日累积开机时间：</td>
+      <td class="dynamicTD" id="onTimeToday"></td>
     </tr>
     <tr>
-      <td>今日累积闲置时间：</td>
-      <td id="idleTimeToday"></td>
+      <td class="staticTD">今日累积打印时间：</td>
+      <td class="dynamicTD" id="printTimeToday"></td>
     </tr>
     <tr>
-      <td>今日累积异常时间：</td>
-      <td id="errorTimeToday"></td>
+      <td class="staticTD">今日累积闲置时间：</td>
+      <td class="dynamicTD" id="idleTimeToday"></td>
+    </tr>
+    <tr>
+      <td class="staticTD">今日累积异常时间：</td>
+      <td class="dynamicTD" id="exceptionTimeToday"></td>
     </tr>
   </table>
 
-  <button id="refreshBtn">刷新</button>
 </main>
 
 <!-- 页脚 -->
@@ -61,6 +64,5 @@
   <div id="currentTime"></div>
 </footer>
 
-<script src="test.js"></script>
 </body>
 </html>

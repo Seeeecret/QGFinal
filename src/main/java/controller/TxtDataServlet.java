@@ -15,6 +15,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.HashMap;
 
 
@@ -26,10 +27,19 @@ import java.util.HashMap;
  */
 @WebServlet("/txtData")
 public class TxtDataServlet extends BaseServlet {
-    private static HashMap<Integer,PrinterStatistic> printerStatisticHashMap = new HashMap<>(10);
+    private static HashMap<Integer, PrinterStatistic> printerStatisticHashMap = new HashMap<>(10);
+    public static HashMap<Integer, Timestamp> printerBeginTimeHashMap = new HashMap<>();
 
     public static HashMap<Integer, PrinterStatistic> getPrinterStatisticHashMap() {
         return printerStatisticHashMap;
+    }
+
+    public static HashMap<Integer, Timestamp> getPrinterBeginTimeHashMap() {
+        return printerBeginTimeHashMap;
+    }
+
+    public static void setPrinterBeginTimeHashMap(HashMap<Integer, Timestamp> printerBeginTimeHashMap) {
+        TxtDataServlet.printerBeginTimeHashMap = printerBeginTimeHashMap;
     }
 
     private static void setPrinterStatisticHashMap(HashMap<Integer, PrinterStatistic> printerStatisticHashMap) {
@@ -51,11 +61,11 @@ public class TxtDataServlet extends BaseServlet {
         String txtData = jsonObject.getString("txtData");
         int printerId = jsonObject.getInteger("printerId");
         PrinterStatistic printerStatistic;
-        if(printerStatisticHashMap. containsKey(printerId)){
+        if (printerStatisticHashMap.containsKey(printerId)) {
             printerStatistic = printerStatisticHashMap.get(printerId);
-        }else {
+        } else {
             printerStatistic = new PrinterStatistic(0);
-            printerStatisticHashMap.put(printerId,printerStatistic);
+            printerStatisticHashMap.put(printerId, printerStatistic);
         }
         PrinterRawMessage printerRawMessage = new PrinterRawMessage(txtData);
         printerStatistic.analyzeTxtData(txtData);
@@ -64,7 +74,7 @@ public class TxtDataServlet extends BaseServlet {
 
 //        以下是websocket新增部分
         PrinterTreatedMessage printerTreatedMessage = new PrinterTreatedMessage(printerRawMessage);
-        WebSocketServer.broadcast(JSON.toJSONString(TxtDataManageService.toWebSocketMap(printerTreatedMessage,printerId)),printerId);
+        WebSocketServer.broadcast(JSON.toJSONString(TxtDataManageService.toWebSocketMap(printerTreatedMessage,printerStatistic, printerId)), printerId);
         Mapper.writeValue(response.getWriter(), ResponseResultSet.success(response));
     }
 
@@ -76,7 +86,7 @@ public class TxtDataServlet extends BaseServlet {
      * @throws IOException ioexception
      */
     public void txtDataThread(HttpServletRequest request,
-                              HttpServletResponse response,JSONObject jsonObject) throws IOException {
+                              HttpServletResponse response, JSONObject jsonObject) throws IOException {
         int printerId = jsonObject.getInteger("printerId");
         TxtWatcherThread txtWatcherThread = new TxtWatcherThread(printerId);
         txtWatcherThread.start();

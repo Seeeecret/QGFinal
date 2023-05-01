@@ -18,4 +18,8 @@ public class PrinterDAO {
         }
         return PrinterResultSetWrapper;
     }
+    public static CRUDUtil.ResultSetWrapper queryPrinterName(int printerId) {
+        CRUDUtil.ResultSetWrapper PrinterResultSetWrapper = CRUDUtil.executeCommonQuery("SELECT name FROM printer WHERE printer_id = ?", printerId);
+        return PrinterResultSetWrapper;
+    }
 }

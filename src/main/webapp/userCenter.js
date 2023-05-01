@@ -1,6 +1,6 @@
 $(document).ready(function () {
     var roleID;
-    var token = localStorage.getItem('token');
+    var token = sessionStorage.getItem('token');
     setInterval(function () {
         $("#currentTime").text("当前系统时间：" + new Date().toLocaleString());
     }, 1000);
@@ -14,7 +14,7 @@ $(document).ready(function () {
         },
         data: {
             page: "userCenter",
-            method: "checkToken",
+            method: "checkTokenRole",
         },
         dataType: "json",
         success: function (data, status, jqXHR) {
@@ -87,18 +87,19 @@ $(document).ready(function () {
         });
     });
     $("#logoutBtn").click(function () {
-        localStorage.removeItem("username");
-        localStorage.removeItem("token");
+        sessionStorage.removeItem("username");
+        sessionStorage.removeItem("token");
         window.location.href = "login.html";
     });
     $("#hallBtn").click(function () {
         window.location.href = "hall.html";
     });
+
 });
 
 function queryUserInfo() {
     // 检查token是否存在
-    let token = localStorage.getItem("token");
+    let token = sessionStorage.getItem("token");
     if (token != null) {
         // 发送请求
         $.ajax({
