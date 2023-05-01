@@ -27,7 +27,7 @@ import java.util.HashMap;
  */
 @WebServlet("/txtData")
 public class TxtDataServlet extends BaseServlet {
-    private static HashMap<Integer, PrinterStatistic> printerStatisticHashMap = new HashMap<>(10);
+     private static HashMap<Integer, PrinterStatistic> printerStatisticHashMap = new HashMap<>(10);
     public static HashMap<Integer, Timestamp> printerBeginTimeHashMap = new HashMap<>();
 
     public static HashMap<Integer, PrinterStatistic> getPrinterStatisticHashMap() {
@@ -88,12 +88,22 @@ public class TxtDataServlet extends BaseServlet {
     public void txtDataThread(HttpServletRequest request,
                               HttpServletResponse response, JSONObject jsonObject) throws IOException {
         int printerId = jsonObject.getInteger("printerId");
-        TxtWatcherThread txtWatcherThread = new TxtWatcherThread(printerId);
-        txtWatcherThread.start();
+        PrinterStatistic printerStatistic;
+
+        if(printerStatisticHashMap.containsKey(printerId)){
+            Mapper.writeValue(response.getWriter(), ResponseResultSet.partialContent(response));
+        }else{
+            printerStatistic = new PrinterStatistic(0);
+            printerStatisticHashMap.put(printerId, printerStatistic);
+            TxtWatcherThread txtWatcherThread = new TxtWatcherThread(printerId);
+            txtWatcherThread.start();
+            Mapper.writeValue(response.getWriter(), ResponseResultSet.success(response));
+        }
+
 
 //        HashMap<String, Object> jsonMap = new HashMap<>(5);
 //        jsonMap.put("code", 200);
 //        jsonMap.put("msg", "请求响应成功");
-        Mapper.writeValue(response.getWriter(), ResponseResultSet.success(response));
+        return;
     }
 }
