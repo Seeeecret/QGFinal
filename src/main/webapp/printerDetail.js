@@ -1,6 +1,11 @@
 var ws;
 $(document).ready(function () {
     var token = sessionStorage.getItem('token');
+    if(token === null){
+        token = localStorage.getItem('token');
+        sessionStorage.setItem('token',token)
+    }
+    localStorage.removeItem('token');
     const urlParams = new URLSearchParams(window.location.search);
     const printerId = urlParams.get('printerId');
     $.ajax({
@@ -23,7 +28,7 @@ $(document).ready(function () {
         },
         error: function (xhr, status, error) {
             alert("System error");
-            window.location.href = "login.html";
+            // window.location.href = "login.html";
         }
     });
     $.ajax({

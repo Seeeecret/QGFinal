@@ -1,4 +1,5 @@
 // 登陆后大厅页面的js
+// var links= [];
 $(document).ready(function () {
     var roleId;
     var username;
@@ -57,14 +58,16 @@ $(document).ready(function () {
             },
             dataType: "json",
             success: function (data, status, jqXHR) {
+                $("#showPrintersBtn").attr("disabled", true);
                 // 处理响应数据
                 if (data.success === true) {
                     // 显示打印机链接
                     var printers = data.data.printerList;
                     for (var i = 0; i < printers.length; i++) {
-                        var printerLink = "<a href='printerDetail.html?printerId=" + printers[i].printerId + "'>" + printers[i].name + "</a>";
+                        var printerLink = "<a target='_blank' class='jumpToPrinterDetail' href='printerDetail.html?printerId=" + printers[i].printerId + "'> " + printers[i].name + " </a>";
                         $("#printerLinks").append(printerLink);
                     }
+                    links=$(".jumpToPrinterDetail");
                 } else {
                     alert("Failed to get printers");
                 }
@@ -74,6 +77,8 @@ $(document).ready(function () {
             }
         });
     });
-
+    $("#printerLinks").click(function () {
+        localStorage.setItem("token", token);
+    });
 
 });
