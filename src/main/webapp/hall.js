@@ -2,21 +2,20 @@
 $(document).ready(function () {
     var roleId;
     var username;
-    var token = localStorage.getItem('token');
+    var token = sessionStorage.getItem('token');
     // 使用Jquery的选择器和html方法，获取和设置元素的内容
     setInterval(function () {
         $("#currentTime").text("当前系统时间：" + new Date().toLocaleString());
     }, 1000);
     $.ajax({
         type: "POST",
-
         url: 'http://localhost:8080/QGFinal_war/checkToken',
         headers: {
             'Authorization': token
         },
         data: {
             page: "hall",
-            method: "checkToken",
+            method: "checkTokenRole",
         },
         dataType: "json",
         success: function (data, status, jqXHR) {
@@ -39,13 +38,13 @@ $(document).ready(function () {
             window.location.href = "userCenter.html";
         });
     $("#logoutBtn").click(function () {
-        localStorage.removeItem("username");
-        localStorage.removeItem("token");
+        sessionStorage.removeItem("username");
+        sessionStorage.removeItem("token");
         window.location.href = "login.html";
     });
     $("#showPrintersBtn").click(function () {
         // 获取用户的roleId和username
-        var username = localStorage.getItem("username");
+        var username = sessionStorage.getItem("username");
 
         // 发送请求
         $.ajax({
@@ -75,5 +74,6 @@ $(document).ready(function () {
             }
         });
     });
+
 
 });

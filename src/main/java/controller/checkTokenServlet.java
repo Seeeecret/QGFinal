@@ -13,7 +13,7 @@ import java.io.IOException;
 @WebServlet("/checkToken")
 public class checkTokenServlet extends BaseServlet{
 
-    public void checkToken(HttpServletRequest request,
+    public void checkTokenRole(HttpServletRequest request,
                                  HttpServletResponse response, JSONObject jsonObject)
             throws IOException {
         String token = JwtUtil.getToken(request);
@@ -23,6 +23,19 @@ public class checkTokenServlet extends BaseServlet{
             checkLoginStatusResultSet = ResponseResultSet.success(response);
             checkLoginStatusResultSet.data("roleId",JwtUtil.getRoleId(token));
             checkLoginStatusResultSet.data("username",JwtUtil.getSubject(token));
+        } else {
+            checkLoginStatusResultSet = ResponseResultSet.fail(response);
+        }
+        Mapper.writeValue(response.getWriter(), checkLoginStatusResultSet);
+    }
+    public void checkTokenOnly(HttpServletRequest request,
+                         HttpServletResponse response, JSONObject jsonObject)
+            throws IOException {
+        String token = JwtUtil.getToken(request);
+        boolean isLogin = JwtUtil.validateToken(token);
+        ResponseResultSet checkLoginStatusResultSet = null;
+        if (isLogin) {
+            checkLoginStatusResultSet = ResponseResultSet.success(response);
         } else {
             checkLoginStatusResultSet = ResponseResultSet.fail(response);
         }

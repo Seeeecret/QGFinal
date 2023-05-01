@@ -11,6 +11,8 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.HashMap;
 
+import static controller.TxtDataServlet.printerBeginTimeHashMap;
+
 /**
  * 专门处理txt数据的服务类,供controller层调用
  *
@@ -90,39 +92,68 @@ public class TxtDataManageService {
     public static void insertTxtData(String original, int printerId) throws SQLException {
         insertTxtData(new PrinterRawMessage(original), printerId);
     }
+
     public static void insertTxtData(PrinterRawMessage printerRawMessage, int printerId) throws SQLException {
         PrinterTreatedMessage printerTreatedMessage = new PrinterTreatedMessage(printerRawMessage);
         HashMap<String, Object> paramsHashMap = new HashMap<>();
-        if(printerTreatedMessage.getFirstParam()!=null) {
-            paramsHashMap.put("firstParam",printerTreatedMessage.getFirstParam());
+        if (printerTreatedMessage.getFirstParam() != null) {
+            paramsHashMap.put("firstParam", printerTreatedMessage.getFirstParam());
         }
-        if(printerTreatedMessage.getSecondParam()!=null) {
-            paramsHashMap.put("secondParam",printerTreatedMessage.getSecondParam());
+        if (printerTreatedMessage.getSecondParam() != null) {
+            paramsHashMap.put("secondParam", printerTreatedMessage.getSecondParam());
         }
         TxtDAO.insertTxtData(new PrinterTreatedMessage(printerRawMessage), paramsHashMap, printerId);
     }
 
     public static void insertStatisticData(PrinterStatistic printerStatistic, PrinterRawMessage printerRawMessage, int printerID) throws SQLException {
-        StatisticTime statisticTime = new StatisticTime(printerStatistic.getOnTime()
-                ,printerStatistic.getPrintTime(),printerStatistic.getIdleTime()
-                ,printerStatistic.getExceptionTime());
-        Timestamp txtDataTimestamp = new Timestamp(printerRawMessage.getTimestamp()*1000);
-        TxtDAO.insertStatisticData(statisticTime,txtDataTimestamp,printerID);
+        StatisticTime statisticTime = new StatisticTime(printerStatistic);
+        Timestamp txtDataTimestamp = new Timestamp(printerRawMessage.getTimestamp() * 1000);
+        TxtDAO.insertStatisticData(statisticTime, txtDataTimestamp, printerID);
     }
 
-    public static HashMap<String,Object> toWebSocketMap(PrinterTreatedMessage printerTreatedMessage, int printerId){
+    public static HashMap<String, Object> toWebSocketMap(PrinterTreatedMessage printerTreatedMessage, PrinterStatistic printerStatistic, int printerId) {
         HashMap<String, Object> jsonHashMap = new HashMap<>();
         PrinterStatus printerStatus = printerTreatedMessage.getPrinterStatus();
-        jsonHashMap.put("printerId",printerId);
-        jsonHashMap.put("statusValue",printerStatus.getStatusValue());
-        jsonHashMap.put("shortDescription",printerStatus.getShortDescription());
-        jsonHashMap.put("paramDescription",printerTreatedMessage.getParamDescription());
-        if(printerStatus == PrinterStatus.WORKBENCH_TEMPERATURE){
-            jsonHashMap.put("temperature",printerTreatedMessage.getFirstParam());
+        Integer statusValue = printerStatus.getStatusValue();
+        StatisticTime statisticTime = new StatisticTime(printerStatistic);
+
+        jsonHashMap.put("statisticTime", statisticTime.toTimeString());
+        jsonHashMap.put("printerId", printerId);
+        jsonHashMap.put("statusValue", statusValue);
+        jsonHashMap.put("shortDescription", printerStatus.getShortDescription());
+        jsonHashMap.put("paramDescription", printerTreatedMessage.getParamDescription());
+
+        if (printerStatus == PrinterStatus.WORK_BEGIN_PRINTING) {
+            if (printerBeginTimeHashMap.containsKey(printerId)) {
+                printerBeginTimeHashMap.replace(printerId, printerTreatedMessage.getTimestamp());
+            } else {
+                printerBeginTimeHashMap.put(printerId, printerTreatedMessage.getTimestamp());
+            }
+        }
+
+        if (printerStatus == PrinterStatus.WORKBENCH_TEMPERATURE) {
+            jsonHashMap.put("printerTemperature", printerTreatedMessage.getFirstParam());
+        } else {
+            jsonHashMap.put("printerTemperature", null);
+        }
+
+        if (printerStatus == PrinterStatus.WORK_TIME_REMAINING) {
+            if (printerBeginTimeHashMap.containsKey(printerId)) {
+                long taskAlreadyCostTime = printerTreatedMessage.getTimestamp().getTime() / 1000 - printerBeginTimeHashMap.get(printerId).getTime() / 1000;
+                long taskTotalTime = taskAlreadyCostTime + (printerTreatedMessage.getFirstParam()).longValue();
+                double taskAlreadyCostTimePercent = (double) taskAlreadyCostTime / taskTotalTime;
+                String taskAlreadyCostTimePercentString = String.format("%.1f", taskAlreadyCostTimePercent * 100);
+                jsonHashMap.put("printerProgress", taskAlreadyCostTimePercentString + "%");
+            } else {
+                jsonHashMap.put("printerProgress", "0%");
+            }
+        }else if(printerStatus == PrinterStatus.WORK_BEGIN_PRINTING){
+            jsonHashMap.put("printerProgress", "0%");
+        }else if(printerStatus == PrinterStatus.WORK_FINISHED) {
+            jsonHashMap.put("printerProgress", "100.0%");
         }else{
-            jsonHashMap.put("temperature",null);
+            jsonHashMap.put("printerProgress", null);
         }
         return jsonHashMap;
     }
-
 }

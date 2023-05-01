@@ -27,10 +27,10 @@ $(document).ready(function () {
                     let jsonData = data;
                     if (jsonData.success === true) {
                         var token = jqXHR.getResponseHeader("Authorization")
-                        localStorage.setItem("username", username);
-                        localStorage.setItem("token", token);
+                        sessionStorage.setItem("username", username);
+                        sessionStorage.setItem("token", token);
                         alert("Successfully login");
-                        window.location.href = "http://localhost:8080/QGFinal_war/hall.html?username=" + localStorage.getItem("username");
+                        window.location.href = "http://localhost:8080/QGFinal_war/hall.html?username=" + sessionStorage.getItem("username");
 
                     } else {
 
@@ -54,6 +54,7 @@ $(document).ready(function () {
     $("#register-link").click(function () {
         window.location.href = "register.html";
     });
+
 });
 
 function getCookie(name) {
