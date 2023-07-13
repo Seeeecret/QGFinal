@@ -8,7 +8,7 @@ $(document).ready(function () {
     $.ajax({
         type: "POST",
 
-        url: 'http://localhost:8080/QGFinal_war/checkToken',
+        url: 'http://192.168.88.130:8080/QGFinal/checkToken',
         headers: {
             'Authorization': token
         },
@@ -56,7 +56,7 @@ $(document).ready(function () {
         $.ajax({
             type: "POST",
             contentType: "application/json",
-            url: 'http://localhost:8080/QGFinal_war/user',
+            url: 'http://192.168.88.130:8080/QGFinal/user',
             headers: {
                 'Authorization': token
             },
@@ -105,7 +105,7 @@ function queryUserInfo() {
         $.ajax({
             type: "POST",
             contentType: "application/json",
-            url: 'http://localhost:8080/QGFinal_war/user',
+            url: 'http://192.168.88.130:8080/QGFinal/user',
             headers: {
                 'Authorization': token
             },

@@ -66,7 +66,7 @@ $(document).ready(function () {
         let roleId = $("#role").val();
         $.ajax({
             type: "GET",
-            url: 'http://localhost:8080/QGFinal_war/user',
+            url: 'http://192.168.88.130:8080/QGFinal/user',
             data: {
                 username: username,
                 password: password,

@@ -10,7 +10,7 @@ $(document).ready(function () {
     const printerId = urlParams.get('printerId');
     $.ajax({
         type: "POST",
-        url: 'http://localhost:8080/QGFinal_war/checkToken',
+        url: 'http://192.168.88.130:8080/QGFinal/checkToken',
         headers: {
             'Authorization': token
         },
@@ -33,7 +33,7 @@ $(document).ready(function () {
     });
     $.ajax({
         type: "POST",
-        url: "http://localhost:8080/QGFinal_war/printer",
+        url: "http://192.168.88.130:8080/QGFinal/printer",
         data: {
             printerId: printerId,
             method: "getPrinterName"
@@ -52,7 +52,7 @@ $(document).ready(function () {
     });
     if (!ws || ws.readyState !== 1) {
         // 如果WebSocket不存在或连接已关闭，则创建一个新的WebSocket对象并建立连接
-        ws = new WebSocket("ws:localhost:8080/QGFinal_war/websocket?printerId=" + printerId, "protocol1");
+        ws = new WebSocket("ws:192.168.88.130:8080/QGFinal/websocket?printerId=" + printerId, "protocol1");
     }
 // 创建一个 WebSocket 对象，指定连接的 URL 和子协议
 
@@ -108,7 +108,7 @@ $(document).ready(function () {
     $("#startBtn").click(function () {
         $.ajax({
             type: "POST",
-            url: "http://localhost:8080/QGFinal_war/txtData",
+            url: "http://192.168.88.130:8080/QGFinal/txtData",
             data: {
                 printerId: printerId,
                 method: "txtDataThread"

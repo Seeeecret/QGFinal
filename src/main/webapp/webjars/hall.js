@@ -14,7 +14,7 @@ $(document).ready(function () {
     }, 1000);
     $.ajax({
         type: "POST",
-        url: 'http://localhost:8080/QGFinal_war/checkToken',
+        url: 'http://192.168.88.130:8080/QGFinal/checkToken',
         headers: {
             'Authorization': token
         },
@@ -54,7 +54,7 @@ $(document).ready(function () {
         // 发送请求
         $.ajax({
             type: "POST",
-            url: "http://localhost:8080/QGFinal_war/printer",
+            url: "http://192.168.88.130:8080/QGFinal/printer",
             data: {
                 roleId: roleId,
                 username: username ,

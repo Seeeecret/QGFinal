@@ -15,7 +15,7 @@ $(document).ready(function () {
             $.ajax({
                 type: "POST",
                 contentType: "application/json",
-                url: 'http://localhost:8080/QGFinal_war/user',
+                url: 'http://192.168.88.130:8080/QGFinal/user',
                 data: {
                     username: username,
                     password: password,
@@ -30,7 +30,7 @@ $(document).ready(function () {
                         sessionStorage.setItem("username", username);
                         sessionStorage.setItem("token", token);
                         alert("Successfully login");
-                        window.location.href = "http://localhost:8080/QGFinal_war/hall.html?username=" + sessionStorage.getItem("username");
+                        window.location.href = "http://192.168.88.130:8080/QGFinal/hall.html?username=" + sessionStorage.getItem("username");
 
                     } else {
 
